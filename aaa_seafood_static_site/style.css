@@ -565,12 +565,18 @@ footer.site-footer .fine-print {
 
 @media (max-width: 600px) {
   .cta-strip {
-    padding: 10px 16px;
+    padding: 8px 14px;
   }
-  .cta-strip .container { text-align: center; justify-content: center; gap: 8px; }
-  .cta-strip h2 { font-size: 0.98rem; }
-  .cta-strip p { font-size: 0.76rem; }
-  .cta-strip .btn-outline { padding: 8px 18px; font-size: 0.85rem; }
+  .cta-strip .container {
+    flex-direction: row;
+    text-align: left;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+  .cta-strip h2 { font-size: 0.82rem; line-height: 1.15; }
+  .cta-strip p { display: none; }
+  .cta-strip .btn-outline { padding: 6px 14px; font-size: 0.76rem; }
 }
 
 /* Hide the sticky bar while the mobile menu is open so it doesn't crowd the nav */
