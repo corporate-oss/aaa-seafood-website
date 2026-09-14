@@ -279,18 +279,6 @@ nav.site-nav a.active {
     grid-template-columns: 1fr;
     gap: 12px;
   }
-  .trust-item .mark {
-    width: 26px;
-    height: 26px;
-    font-size: 0.75rem;
-    border-width: 1px;
-  }
-  .trust-item strong { font-size: 0.82rem; }
-  .trust-item p {
-    margin-top: 1px;
-    font-size: 0.72rem;
-    line-height: 1.25;
-  }
 }
 
 .trust-item {
@@ -326,6 +314,21 @@ nav.site-nav a.active {
   line-height: 1.4;
 }
 
+@media (max-width: 700px) {
+  .trust-item .mark {
+    width: 26px;
+    height: 26px;
+    font-size: 0.75rem;
+    border-width: 1px;
+  }
+  .trust-item strong { font-size: 0.82rem; }
+  .trust-item p {
+    margin-top: 1px;
+    font-size: 0.72rem;
+    line-height: 1.25;
+  }
+}
+
 /* 404 page */
 .not-found { padding: 100px 0; }
 .not-found-eyebrow {
@@ -343,7 +346,6 @@ section.alt { background: var(--bg-alt); }
 
 @media (max-width: 700px) {
   section { padding: 32px 0; }
-  .section-sub { margin-bottom: 22px; }
 }
 
 .section-title {
@@ -357,6 +359,10 @@ section.alt { background: var(--bg-alt); }
   color: var(--muted);
   max-width: 640px;
   margin: 0 auto 36px;
+}
+
+@media (max-width: 700px) {
+  .section-sub { margin-bottom: 22px; }
 }
 
 /* Product grid */
