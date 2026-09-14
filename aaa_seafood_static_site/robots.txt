@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://aaa-international-seafood.pages.dev/sitemap.xml
