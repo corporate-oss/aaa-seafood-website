@@ -260,6 +260,14 @@ nav.site-nav a.active {
 
 .btn-outline:hover { background: #fff; color: var(--ink); filter: none; }
 
+.hero-ctas {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 22px;
+}
+
 /* Trust strip */
 .trust-strip {
   background: var(--green-dark);
