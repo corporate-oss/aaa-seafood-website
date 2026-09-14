@@ -454,6 +454,8 @@ section.alt { background: var(--bg-alt); }
   align-items: start;
 }
 
+.contact-wrap > * { min-width: 0; }
+
 @media (max-width: 780px) {
   .contact-wrap { grid-template-columns: 1fr; }
 }
@@ -473,6 +475,7 @@ section.alt { background: var(--bg-alt); }
 .contact-line {
   margin: 14px 0;
   font-size: 1rem;
+  overflow-wrap: anywhere;
 }
 
 .contact-line strong { display: block; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 3px; }
