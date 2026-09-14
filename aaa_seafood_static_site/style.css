@@ -292,6 +292,17 @@ nav.site-nav a.active {
   line-height: 1.4;
 }
 
+/* 404 page */
+.not-found { padding: 100px 0; }
+.not-found-eyebrow {
+  text-align: center;
+  font-family: 'Fraunces', serif;
+  font-weight: 700;
+  font-size: 3rem;
+  color: var(--tuna);
+  margin: 0 0 4px;
+}
+
 /* Sections */
 section { padding: 60px 0; }
 section.alt { background: var(--bg-alt); }
@@ -519,5 +530,14 @@ footer.site-footer .fine-print {
 .cta-strip .btn-outline:hover { background: #fff; color: var(--tuna); }
 
 @media (max-width: 600px) {
-  .cta-strip .container { text-align: center; justify-content: center; }
+  .cta-strip {
+    padding: 10px 16px;
+  }
+  .cta-strip .container { text-align: center; justify-content: center; gap: 8px; }
+  .cta-strip h2 { font-size: 0.98rem; }
+  .cta-strip p { font-size: 0.76rem; }
+  .cta-strip .btn-outline { padding: 8px 18px; font-size: 0.85rem; }
 }
+
+/* Hide the sticky bar while the mobile menu is open so it doesn't crowd the nav */
+body:has(nav.site-nav.open) .cta-strip { display: none; }
