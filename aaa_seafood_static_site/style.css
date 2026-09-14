@@ -136,8 +136,13 @@ nav.site-nav a.active {
   }
   header.site-header {
     flex-wrap: wrap;
+    padding: 8px 16px;
   }
-  .nav-toggle { display: block; }
+  .nav-toggle { display: block; font-size: 1.3rem; }
+  .brand { gap: 8px; }
+  .brand img { height: 34px; }
+  .brand-text { font-size: 0.82rem; line-height: 1.1; }
+  .brand-text span { font-size: 0.52rem; letter-spacing: 0.5px; }
 }
 
 /* Hero */
@@ -254,8 +259,22 @@ nav.site-nav a.active {
 }
 
 @media (max-width: 700px) {
+  .trust-strip { padding: 16px 0; }
   .trust-strip .container {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .trust-item .mark {
+    width: 26px;
+    height: 26px;
+    font-size: 0.75rem;
+    border-width: 1px;
+  }
+  .trust-item strong { font-size: 0.82rem; }
+  .trust-item p {
+    margin-top: 1px;
+    font-size: 0.72rem;
+    line-height: 1.25;
   }
 }
 
