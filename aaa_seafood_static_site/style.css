@@ -1,0 +1,352 @@
+/* AAA International Seafood — shared styles */
+:root {
+  --green: #1f6b3a;
+  --green-dark: #14502b;
+  --ink: #1c1c1c;
+  --muted: #5b5b5b;
+  --bg: #ffffff;
+  --bg-alt: #f5f6f3;
+  --border: #e3e5e0;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+  scroll-behavior: smooth;
+}
+
+img { max-width: 100%; display: block; }
+
+a { color: inherit; text-decoration: none; }
+
+.container {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Header */
+header.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--border);
+  background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand img {
+  height: 56px;
+  width: auto;
+}
+
+.brand-text {
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  font-size: 1.05rem;
+  line-height: 1.15;
+}
+
+.brand-text span {
+  display: block;
+  font-weight: 500;
+  font-size: 0.7rem;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+
+nav.site-nav ul {
+  list-style: none;
+  display: flex;
+  gap: 28px;
+  margin: 0;
+  padding: 0;
+}
+
+nav.site-nav a {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--ink);
+  padding: 6px 2px;
+  border-bottom: 2px solid transparent;
+}
+
+nav.site-nav a:hover,
+nav.site-nav a.active {
+  color: var(--green);
+  border-bottom-color: var(--green);
+}
+
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  cursor: pointer;
+}
+
+@media (max-width: 820px) {
+  nav.site-nav {
+    display: none;
+    width: 100%;
+    order: 3;
+  }
+  nav.site-nav.open { display: block; }
+  nav.site-nav ul {
+    flex-direction: column;
+    gap: 0;
+    border-top: 1px solid var(--border);
+    margin-top: 14px;
+  }
+  nav.site-nav a {
+    display: block;
+    padding: 14px 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  header.site-header {
+    flex-wrap: wrap;
+  }
+  .nav-toggle { display: block; }
+}
+
+/* Hero */
+.hero {
+  position: relative;
+  background: #111;
+  color: #fff;
+  overflow: hidden;
+}
+
+.hero video {
+  width: 100%;
+  max-height: 560px;
+  object-fit: cover;
+  opacity: 0.55;
+  display: block;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+}
+
+.hero-overlay h1 {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  margin: 0 0 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.hero-overlay p {
+  font-size: 1.1rem;
+  max-width: 640px;
+  margin: 0 0 22px;
+  color: #eee;
+}
+
+.btn {
+  display: inline-block;
+  background: var(--green);
+  color: #fff;
+  padding: 13px 28px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn:hover { background: var(--green-dark); }
+
+.btn-outline {
+  background: transparent;
+  border: 2px solid #fff;
+  color: #fff;
+}
+
+/* Sections */
+section { padding: 60px 0; }
+section.alt { background: var(--bg-alt); }
+
+.section-title {
+  text-align: center;
+  margin-bottom: 8px;
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+}
+
+.section-sub {
+  text-align: center;
+  color: var(--muted);
+  max-width: 640px;
+  margin: 0 auto 36px;
+}
+
+/* Product grid */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 22px;
+}
+
+.product-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.product-card:hover {
+  box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+}
+
+.product-card .thumb {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #eee;
+}
+
+.product-card .thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.product-card .label {
+  padding: 12px 14px;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.category-block { margin-bottom: 50px; }
+.category-block h2 {
+  font-size: 1.3rem;
+  border-left: 5px solid var(--green);
+  padding-left: 12px;
+  margin-bottom: 24px;
+}
+
+/* Delivery */
+.area-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.area-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--green);
+  border-radius: 6px;
+  padding: 16px 18px;
+  font-weight: 600;
+}
+
+/* Contact */
+.contact-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 40px;
+  align-items: start;
+}
+
+@media (max-width: 780px) {
+  .contact-wrap { grid-template-columns: 1fr; }
+}
+
+.contact-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 28px;
+}
+
+.contact-card h3 {
+  margin-top: 0;
+  color: var(--green);
+}
+
+.contact-line {
+  margin: 14px 0;
+  font-size: 1rem;
+}
+
+.contact-line strong { display: block; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 3px; }
+
+.form-embed {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.form-embed iframe {
+  width: 100%;
+  min-height: 720px;
+  border: none;
+}
+
+/* Footer */
+footer.site-footer {
+  background: var(--green-dark);
+  color: #eaf2ea;
+  padding: 40px 0 26px;
+  margin-top: 20px;
+}
+
+footer.site-footer .container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: space-between;
+}
+
+footer.site-footer h4 {
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+}
+
+footer.site-footer a { color: #eaf2ea; }
+footer.site-footer .fine-print {
+  width: 100%;
+  border-top: 1px solid rgba(255,255,255,0.15);
+  margin-top: 26px;
+  padding-top: 16px;
+  font-size: 0.82rem;
+  color: #c9dccb;
+  text-align: center;
+}
+
+.cta-strip {
+  background: var(--green);
+  color: #fff;
+  text-align: center;
+  padding: 46px 24px;
+}
+
+.cta-strip h2 { margin: 0 0 8px; }
+.cta-strip p { margin: 0 0 20px; color: #e3f1e5; }
