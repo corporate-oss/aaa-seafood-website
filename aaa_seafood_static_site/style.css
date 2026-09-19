@@ -418,6 +418,24 @@ section.alt { background: var(--bg-alt); }
   transform: scale(1.06);
 }
 
+.product-card .thumb.placeholder {
+  flex-direction: column;
+  gap: 6px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.product-card .thumb.placeholder svg {
+  width: 34px;
+  height: 34px;
+  opacity: 0.5;
+}
+
+.product-card .thumb.placeholder span {
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+}
+
 .product-card .label {
   padding: 12px 14px;
   font-weight: 600;
