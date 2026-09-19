@@ -596,11 +596,8 @@ footer.site-footer .fine-print {
   text-align: center;
 }
 
-/* Sticky contact bar (replaces the old plain cta-strip) */
+/* Contact CTA bar */
 .cta-strip {
-  position: sticky;
-  bottom: 0;
-  z-index: 40;
   background: var(--tuna);
   color: #fff;
   padding: 16px 24px;
@@ -649,9 +646,6 @@ footer.site-footer .fine-print {
   .cta-strip p { display: none; }
   .cta-strip .btn-outline { padding: 6px 14px; font-size: 0.76rem; }
 }
-
-/* Hide the sticky bar while the mobile menu is open so it doesn't crowd the nav */
-body:has(nav.site-nav.open) .cta-strip { display: none; }
 
 
 /* Scroll-reveal for section entrances */
