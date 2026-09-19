@@ -56,6 +56,12 @@ header.site-header {
   position: sticky;
   top: 0;
   z-index: 50;
+  box-shadow: 0 0 0 rgba(20,40,25,0);
+  transition: box-shadow 0.25s ease;
+}
+
+header.site-header.scrolled {
+  box-shadow: 0 4px 18px rgba(20,40,25,0.09);
 }
 
 .brand {
@@ -118,11 +124,17 @@ nav.site-nav a.active {
 
 @media (max-width: 820px) {
   nav.site-nav {
-    display: none;
     width: 100%;
     order: 3;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
   }
-  nav.site-nav.open { display: block; }
+  nav.site-nav.open {
+    max-height: 400px;
+    opacity: 1;
+  }
   nav.site-nav ul {
     flex-direction: column;
     gap: 0;
@@ -219,14 +231,15 @@ nav.site-nav a.active {
   justify-content: center;
 }
 
-.hero-stats div {
+.hero-stats .stat-num {
+  display: block;
   font-family: 'Fraunces', serif;
   font-weight: 700;
   font-size: 1.6rem;
   color: #fff;
 }
 
-.hero-stats span {
+.hero-stats .stat-label {
   display: block;
   font-family: 'Public Sans', sans-serif;
   font-weight: 600;
@@ -248,17 +261,30 @@ nav.site-nav a.active {
   letter-spacing: 0.3px;
   border: none;
   cursor: pointer;
+  transition: filter 0.2s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
 }
 
-.btn:hover { filter: brightness(0.92); }
+.btn:hover {
+  filter: brightness(0.92);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(179,64,44,0.25);
+}
+
+.btn:active { transform: translateY(0); box-shadow: none; }
 
 .btn-outline {
   background: transparent;
   border: 2px solid #fff;
   color: #fff;
+  box-shadow: none;
 }
 
-.btn-outline:hover { background: #fff; color: var(--ink); filter: none; }
+.btn-outline:hover { background: #fff; color: var(--ink); filter: none; box-shadow: 0 10px 20px rgba(0,0,0,0.18); }
+
+@media (prefers-reduced-motion: reduce) {
+  .btn { transition: filter 0.2s ease; }
+  .btn:hover { transform: none; }
+}
 
 .hero-ctas {
   display: flex;
@@ -631,8 +657,8 @@ body:has(nav.site-nav.open) .cta-strip { display: none; }
 /* Scroll-reveal for section entrances */
 .reveal {
   opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  transform: translateY(28px);
+  transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .reveal.in-view {
@@ -647,3 +673,15 @@ body:has(nav.site-nav.open) .cta-strip { display: none; }
     transition: none;
   }
 }
+
+/* Keyboard focus */
+a:focus-visible,
+button:focus-visible,
+.btn:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Hero stat count-up target */
+.hero-stats .stat-num { font-variant-numeric: tabular-nums; }
