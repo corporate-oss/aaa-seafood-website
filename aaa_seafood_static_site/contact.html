@@ -65,35 +65,38 @@
       </div>
 
       <div class="form-embed">
-        <form id="contact-form" action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSdT587_Sx7lxzIseKCUeKNhGo-wHPHGZteja1P-BeuOgnUMOQ/formResponse" method="POST" target="hidden_iframe">
+        <form id="contact-form" action="/api/contact" method="POST">
           <div class="form-row">
             <div class="field">
               <label for="cf-name">Name</label>
-              <input id="cf-name" name="entry.1552618580" type="text" autocomplete="name" required>
+              <input id="cf-name" name="name" type="text" autocomplete="name" required>
             </div>
             <div class="field">
               <label for="cf-business">Restaurant / Business</label>
-              <input id="cf-business" name="entry.1901319334" type="text" autocomplete="organization" required>
+              <input id="cf-business" name="business" type="text" autocomplete="organization" required>
             </div>
           </div>
           <div class="form-row">
             <div class="field">
               <label for="cf-email">Email</label>
-              <input id="cf-email" name="entry.753801335" type="email" autocomplete="email" required>
+              <input id="cf-email" name="email" type="email" autocomplete="email" required>
             </div>
             <div class="field">
               <label for="cf-phone">Phone</label>
-              <input id="cf-phone" name="entry.825330940" type="tel" autocomplete="tel" required>
+              <input id="cf-phone" name="phone" type="tel" autocomplete="tel" required>
             </div>
           </div>
           <div class="field">
             <label for="cf-message">Message</label>
-            <textarea id="cf-message" name="entry.1503377513" rows="5" placeholder="Tell us what you're looking for — products, delivery area, volume."></textarea>
+            <textarea id="cf-message" name="message" rows="5" placeholder="Tell us what you're looking for — products, delivery area, volume."></textarea>
+          </div>
+          <div class="field" style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;" aria-hidden="true">
+            <label for="cf-website">Website</label>
+            <input id="cf-website" name="company_website" type="text" tabindex="-1" autocomplete="off">
           </div>
           <p class="form-note" id="cf-note"></p>
           <button type="submit" class="btn">Send Message</button>
         </form>
-        <iframe name="hidden_iframe" id="hidden_iframe" style="display:none" title="" aria-hidden="true"></iframe>
       </div>
     </div>
   </div>
