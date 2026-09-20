@@ -69,28 +69,56 @@ document.addEventListener('DOMContentLoaded', function () {
   statEls.forEach(function (el) { statObserver.observe(el); });
 });
 
-// Contact form — posts to our Google Form's backend via a hidden iframe so
-// the page keeps its own look instead of showing Google's embedded styling.
-// Responses still land in the same Google Form / spreadsheet as before.
+// Contact form — submits to our own /api/contact function, which relays
+// the message to our Google Form's backend server-side (see
+// functions/api/contact.js for why: Google requires a few hidden tokens
+// that only its own live page can generate, so the hand-off happens on
+// the server instead of via a client-side iframe post). The page keeps
+// its own look throughout; responses still land in the same Google Form
+// / spreadsheet as before. Because this is a real fetch with a real
+// response, a failed submission is reported honestly instead of assumed
+// to have succeeded.
 document.addEventListener('DOMContentLoaded', function () {
   var form = document.getElementById('contact-form');
-  var iframe = document.getElementById('hidden_iframe');
   var note = document.getElementById('cf-note');
-  if (!form || !iframe || !note) return;
+  if (!form || !note) return;
 
-  var submitted = false;
+  var submitBtn = form.querySelector('button[type="submit"]');
 
-  form.addEventListener('submit', function () {
-    submitted = true;
-    note.textContent = '';
-    note.classList.remove('success');
-  });
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
 
-  iframe.addEventListener('load', function () {
-    if (!submitted) return; // ignore the iframe's initial blank load on page load
-    submitted = false;
-    note.textContent = "Thanks — your message is on its way. We'll be in touch shortly.";
-    note.classList.add('success');
-    form.reset();
+    note.textContent = 'Sending…';
+    note.classList.remove('success', 'error');
+    if (submitBtn) submitBtn.disabled = true;
+
+    fetch(form.action, {
+      method: 'POST',
+      body: new FormData(form),
+    })
+      .then(function (response) {
+        return response.json().catch(function () { return { ok: false }; }).then(function (data) {
+          return { status: response.status, data: data };
+        });
+      })
+      .then(function (result) {
+        if (result.data && result.data.ok) {
+          note.textContent = "Thanks — your message is on its way. We'll be in touch shortly.";
+          note.classList.add('success');
+          form.reset();
+        } else {
+          var message = (result.data && result.data.error) ||
+            "Something went wrong sending your message. Please try again or call us at 323-582-8003.";
+          note.textContent = message;
+          note.classList.add('error');
+        }
+      })
+      .catch(function () {
+        note.textContent = "Something went wrong sending your message. Please try again or call us at 323-582-8003.";
+        note.classList.add('error');
+      })
+      .finally(function () {
+        if (submitBtn) submitBtn.disabled = false;
+      });
   });
 });
