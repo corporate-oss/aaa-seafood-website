@@ -65,7 +65,35 @@
       </div>
 
       <div class="form-embed">
-        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdT587_Sx7lxzIseKCUeKNhGo-wHPHGZteja1P-BeuOgnUMOQ/viewform?embedded=true" title="Contact form" loading="lazy">Loading…</iframe>
+        <form id="contact-form" action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSdT587_Sx7lxzIseKCUeKNhGo-wHPHGZteja1P-BeuOgnUMOQ/formResponse" method="POST" target="hidden_iframe">
+          <div class="form-row">
+            <div class="field">
+              <label for="cf-name">Name</label>
+              <input id="cf-name" name="entry.1552618580" type="text" autocomplete="name" required>
+            </div>
+            <div class="field">
+              <label for="cf-business">Restaurant / Business</label>
+              <input id="cf-business" name="entry.1901319334" type="text" autocomplete="organization" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label for="cf-email">Email</label>
+              <input id="cf-email" name="entry.753801335" type="email" autocomplete="email" required>
+            </div>
+            <div class="field">
+              <label for="cf-phone">Phone</label>
+              <input id="cf-phone" name="entry.825330940" type="tel" autocomplete="tel" required>
+            </div>
+          </div>
+          <div class="field">
+            <label for="cf-message">Message</label>
+            <textarea id="cf-message" name="entry.1503377513" rows="5" placeholder="Tell us what you're looking for — products, delivery area, volume."></textarea>
+          </div>
+          <p class="form-note" id="cf-note"></p>
+          <button type="submit" class="btn">Send Message</button>
+        </form>
+        <iframe name="hidden_iframe" id="hidden_iframe" style="display:none" title="" aria-hidden="true"></iframe>
       </div>
     </div>
   </div>
@@ -81,6 +109,10 @@
       <h4>Contact</h4>
       <p><a href="mailto:corporate@aaainternationalseafood.com">corporate@aaainternationalseafood.com</a></p>
       <p>323-582-8003</p>
+    </div>
+    <div>
+      <h4>Hours</h4>
+      <p>Monday&ndash;Saturday<br>6:00 AM&ndash;4:00 PM</p>
     </div>
     <div class="fine-print">&copy; AAA International Seafood. All rights reserved.</div>
   </div>
