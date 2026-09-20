@@ -17,6 +17,13 @@
 // Responses still land in the same Google Form / linked spreadsheet as
 // before. Nothing about the destination changed — only how the hand-off
 // to it happens.
+//
+// After a successful hand-off, it also sends the visitor a branded
+// confirmation email via Resend (see buildConfirmationEmailHtml /
+// sendConfirmationEmail below). That step runs in the background via
+// context.waitUntil so a slow or failed email never turns an otherwise
+// successful submission into an error for the visitor — their message is
+// already safely recorded in the Sheet by that point regardless.
 
 const FORM_VIEW_URL =
   'https://docs.google.com/forms/d/e/1FAIpQLSdGEXpdngnj7pHR-G4XFNNNykZAT51z7D9NHcWAVgKb9fn9jQ/viewform';
@@ -65,6 +72,228 @@ function json(body, status) {
     status,
     headers: { 'Content-Type': 'application/json' },
   });
+}
+
+// --- Confirmation email (sent via Resend) ----------------------------------
+
+const RESEND_API_URL = 'https://api.resend.com/emails';
+const EMAIL_FROM = 'AAA International Seafood <no-reply@aaainternationalseafood.com>';
+const EMAIL_SUBJECT = "We've received your message — AAA International Seafood";
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// Renders the branded "dockside ledger" confirmation email design the user
+// approved as a static mockup, populated with the visitor's own submitted
+// values. Matches the site's design system (dark green header, cream recap
+// box, red contact strip) and stacks the contact strip to one column under
+// 600px for phone-width inboxes.
+function buildConfirmationEmailHtml({ business, city, phone, language, message }) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${escapeHtml(EMAIL_SUBJECT)}</title>
+<style>
+  body {
+    margin: 0;
+    padding: 32px 16px;
+    background: #ddd4bf;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  table { border-collapse: collapse; }
+  .email-shell {
+    max-width: 600px;
+    margin: 0 auto;
+    background: #ffffff;
+    border: 1px solid #cfc3a3;
+    border-radius: 3px;
+    box-shadow: 0 12px 30px rgba(18,24,26,0.12);
+    overflow: hidden;
+  }
+  .header-bar { background: #1f332a; padding: 26px 32px; }
+  .brand-name { font-family: Georgia, 'Times New Roman', serif; color: #f3efe4; font-size: 1.2rem; font-weight: 700; letter-spacing: 0.3px; }
+  .brand-sub { font-family: 'Space Grotesk', -apple-system, sans-serif; color: #9ca69d; font-size: 0.62rem; letter-spacing: 1px; text-transform: uppercase; margin-top: 3px; }
+
+  .body-pad { padding: 34px 32px 8px; }
+  .eyebrow { font-family: Georgia, 'Times New Roman', serif; font-style: italic; color: #b9964a; font-size: 0.95rem; margin: 0 0 6px; }
+  h1.title { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; font-size: 1.5rem; color: #12181a; margin: 0 0 18px; line-height: 1.25; }
+  p.lead { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 0.98rem; line-height: 1.6; color: #33362f; margin: 0 0 18px; }
+
+  .recap {
+    margin: 4px 0 26px;
+    border: 1px solid #dcd2b8;
+    border-radius: 3px;
+    background: #f6f1e7;
+  }
+  .recap-head {
+    padding: 12px 18px;
+    font-family: 'Space Grotesk', -apple-system, sans-serif;
+    font-weight: 600;
+    font-size: 0.7rem;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #5c6259;
+    border-bottom: 1px solid #dcd2b8;
+  }
+  .recap-row { padding: 12px 18px; border-bottom: 1px solid #e9e1cd; }
+  .recap-row:last-child { border-bottom: none; }
+  .recap-label { font-family: 'Space Grotesk', -apple-system, sans-serif; font-weight: 600; font-size: 0.66rem; letter-spacing: 0.5px; text-transform: uppercase; color: #8a8578; display: block; margin-bottom: 2px; }
+  .recap-value { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 0.92rem; color: #12181a; }
+
+  .next-steps { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 0.92rem; line-height: 1.6; color: #33362f; margin: 0 0 30px; }
+
+  .contact-strip { background: #c1392b; padding: 20px 32px; }
+  .contact-strip table td { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; color: #ffffff; font-size: 0.86rem; line-height: 1.5; vertical-align: top; }
+  .contact-strip .label { display: block; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 0.62rem; letter-spacing: 0.5px; text-transform: uppercase; color: #fbe3dd; margin-bottom: 2px; }
+
+  .footer { padding: 20px 32px 26px; }
+  .footer p { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 0.76rem; color: #8a8578; line-height: 1.6; margin: 0; }
+
+  /* Phone-width inboxes (Apple Mail, Gmail, Outlook.com all honor @media
+     in HTML email; Outlook desktop ignores it and keeps the desktop
+     layout, which still reads fine at 600px). */
+  @media screen and (max-width: 600px) {
+    body { padding: 16px 0; }
+    .email-shell { max-width: 100% !important; margin: 0 8px; border-radius: 0; }
+    .header-bar { padding: 20px 20px !important; }
+    .brand-name { font-size: 1.05rem !important; }
+    .body-pad { padding: 24px 20px 4px !important; }
+    h1.title { font-size: 1.22rem !important; }
+    p.lead, .next-steps { font-size: 0.9rem !important; }
+    .recap-head, .recap-row { padding: 10px 14px !important; }
+    .recap-value { font-size: 0.88rem !important; }
+    .contact-strip { padding: 18px 20px !important; }
+
+    /* Stack the address/hours/phone columns instead of squeezing 3 across */
+    .contact-strip table, .contact-strip tr, .contact-strip .cs-cell {
+      display: block !important;
+      width: 100% !important;
+    }
+    .contact-strip .cs-cell { padding: 0 0 12px !important; }
+    .contact-strip .cs-cell:last-child { padding-bottom: 0 !important; }
+
+    .footer { padding: 16px 20px 22px !important; }
+  }
+</style>
+</head>
+<body>
+  <div class="email-shell">
+    <table role="presentation" width="100%">
+      <tr><td class="header-bar">
+        <div class="brand-name">AAA INTERNATIONAL SEAFOOD</div>
+        <div class="brand-sub">Wholesale Seafood Distributor</div>
+      </td></tr>
+
+      <tr><td class="body-pad">
+        <p class="eyebrow">Thank you</p>
+        <h1 class="title">We've received your message.</h1>
+        <p class="lead">
+          Thanks for reaching out to AAA International Seafood. This confirms we received your
+          submission below — a member of our team will follow up shortly, usually within one
+          business day.
+        </p>
+
+        <div class="recap">
+          <div class="recap-head">What you sent us</div>
+          <div class="recap-row">
+            <span class="recap-label">Restaurant / Business</span>
+            <span class="recap-value">${escapeHtml(business)}</span>
+          </div>
+          <div class="recap-row">
+            <span class="recap-label">City</span>
+            <span class="recap-value">${escapeHtml(city)}</span>
+          </div>
+          <div class="recap-row">
+            <span class="recap-label">Phone</span>
+            <span class="recap-value">${escapeHtml(phone)}</span>
+          </div>
+          <div class="recap-row">
+            <span class="recap-label">Preferred Contact Language</span>
+            <span class="recap-value">${escapeHtml(language)}</span>
+          </div>
+          <div class="recap-row">
+            <span class="recap-label">Message</span>
+            <span class="recap-value">${escapeHtml(message)}</span>
+          </div>
+        </div>
+
+        <p class="next-steps">
+          If anything above doesn't look right, or if this is urgent, just call us directly
+          at <strong>323-582-8003</strong> and we'll take care of it right away.
+        </p>
+      </td></tr>
+
+      <tr><td class="contact-strip">
+        <table role="presentation" width="100%">
+          <tr>
+            <td class="cs-cell">
+              <span class="label">Address</span>
+              2535 E 28th Street,<br>Vernon, CA 90058
+            </td>
+            <td class="cs-cell">
+              <span class="label">Hours</span>
+              Mon–Sat, 6am–4pm
+            </td>
+            <td class="cs-cell">
+              <span class="label">Phone</span>
+              323-582-8003
+            </td>
+          </tr>
+        </table>
+      </td></tr>
+
+      <tr><td class="footer">
+        <p>
+          This is an automated confirmation sent because a message was submitted through the
+          contact form at aaainternationalseafood.com. If you didn't submit this, you can
+          safely ignore this email.
+        </p>
+      </td></tr>
+    </table>
+  </div>
+</body>
+</html>`;
+}
+
+// Best-effort — errors are caught and logged by the caller (via
+// context.waitUntil below) rather than propagated, since a confirmation
+// email failing should never make an already-successful form submission
+// look like it failed.
+async function sendConfirmationEmail(env, { business, city, phone, email, language, message }) {
+  const apiKey = env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.error('RESEND_API_KEY is not configured — skipping confirmation email.');
+    return;
+  }
+
+  const html = buildConfirmationEmailHtml({ business, city, phone, language, message });
+
+  const resp = await fetch(RESEND_API_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: EMAIL_FROM,
+      to: email,
+      subject: EMAIL_SUBJECT,
+      html,
+    }),
+  });
+
+  if (!resp.ok) {
+    const errText = await resp.text().catch(() => '');
+    console.error(`Resend API error (${resp.status}): ${errText}`);
+  }
 }
 
 export async function onRequestPost(context) {
@@ -173,6 +402,16 @@ export async function onRequestPost(context) {
       502
     );
   }
+
+  // Send the visitor's confirmation email in the background so it can
+  // never delay or fail the response below — their message is already
+  // safely recorded in the Sheet at this point regardless of what happens
+  // to the email.
+  context.waitUntil(
+    sendConfirmationEmail(context.env, { business, city, phone, email, language, message }).catch((err) => {
+      console.error('Failed to send confirmation email:', err);
+    })
+  );
 
   return json({ ok: true }, 200);
 }
