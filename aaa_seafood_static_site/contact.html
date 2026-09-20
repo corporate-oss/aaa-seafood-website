@@ -78,16 +78,31 @@
           </div>
           <div class="form-row">
             <div class="field">
-              <label for="cf-email">Email</label>
-              <input id="cf-email" name="email" type="email" autocomplete="email" required>
+              <label for="cf-city">City</label>
+              <input id="cf-city" name="city" type="text" autocomplete="address-level2" required>
             </div>
             <div class="field">
               <label for="cf-phone">Phone</label>
               <input id="cf-phone" name="phone" type="tel" autocomplete="tel" required>
             </div>
           </div>
+          <div class="form-row">
+            <div class="field">
+              <label for="cf-email">Email</label>
+              <input id="cf-email" name="email" type="email" autocomplete="email" required>
+            </div>
+            <div class="field">
+              <label for="cf-language">Preferred Contact Language</label>
+              <select id="cf-language" name="language" required>
+                <option value="English">English</option>
+                <option value="Korean">Korean</option>
+                <option value="Chinese">Chinese</option>
+                <option value="Japanese">Japanese</option>
+              </select>
+            </div>
+          </div>
           <div class="field">
-            <label for="cf-message">Message</label>
+            <label for="cf-message">Questions</label>
             <textarea id="cf-message" name="message" rows="5" placeholder="Tell us what you're looking for — products, delivery area, volume."></textarea>
           </div>
           <div class="field" style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;" aria-hidden="true">
