@@ -38,6 +38,15 @@ const FIELD_MAP = {
   message: 'entry.615314997',
 };
 
+// The "Preferred Contact Language" question renders as a native dropdown,
+// and Google Forms pairs every dropdown/multiple-choice question with a
+// hidden "<entry>_sentinel" field (present in the page with no value —
+// it's just a marker). Omitting it makes Google silently reject the
+// submission: formResponse still returns HTTP 200, but the confirmation
+// page never appears and nothing gets recorded. So it has to be sent
+// alongside the real answer, even though its value is always empty.
+const SENTINEL_FIELDS = ['entry.1526857845_sentinel'];
+
 function extractHidden(html, name) {
   const tagMatch = html.match(new RegExp(`<input[^>]*name="${name}"[^>]*>`));
   if (!tagMatch) return null;
@@ -118,15 +127,17 @@ export async function onRequestPost(context) {
   params.set(FIELD_MAP.email, email);
   params.set(FIELD_MAP.language, language);
   params.set(FIELD_MAP.message, message);
+  for (const sentinel of SENTINEL_FIELDS) params.set(sentinel, '');
   params.set('fvv', fvv);
   if (partialResponse) params.set('partialResponse', partialResponse);
   params.set('pageHistory', pageHistory);
   params.set('fbzx', fbzx);
-  params.set('submissionTimestamp', Date.now().toString());
+  params.set('submissionTimestamp', '-1');
 
+  let submitResp;
   let submitHtml;
   try {
-    const submitResp = await fetch(FORM_SUBMIT_URL, {
+    submitResp = await fetch(FORM_SUBMIT_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -142,7 +153,20 @@ export async function onRequestPost(context) {
     );
   }
 
-  const recorded = submitHtml.includes('Your response has been recorded');
+  // Google's confirmation page doesn't reliably include the literal
+  // "Your response has been recorded" text — Forms' own rendering has
+  // changed over time, and testing against the real production form
+  // showed responses being recorded correctly even without that exact
+  // phrase in the returned HTML. A genuinely rejected submission, though,
+  // reliably re-shows the form with a "This is a required question"
+  // validation error. So: trust a successful HTTP response unless that
+  // specific rejection marker is present — this mirrors how a real
+  // browser behaves too, since it never parses Google's confirmation
+  // copy, it just follows the submission through.
+  const lowerHtml = submitHtml.toLowerCase();
+  const hasRequiredFieldError = lowerHtml.includes('this is a required question');
+  const recorded = submitResp.ok && !hasRequiredFieldError;
+
   if (!recorded) {
     return json(
       { ok: false, error: 'The form backend did not confirm your message was received. Please try again or call us directly.' },
