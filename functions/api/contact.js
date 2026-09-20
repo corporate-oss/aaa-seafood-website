@@ -240,7 +240,7 @@ function buildConfirmationEmailHtml({ business, city, phone, language, message }
             </td>
             <td class="cs-cell">
               <span class="label">Hours</span>
-              Mon–Sat, 6am–4pm
+              Mon–Sat, 6am–3pm
             </td>
             <td class="cs-cell">
               <span class="label">Phone</span>
