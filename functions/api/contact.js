@@ -19,16 +19,23 @@
 // to it happens.
 
 const FORM_VIEW_URL =
-  'https://docs.google.com/forms/d/e/1FAIpQLSdT587_Sx7lxzIseKCUeKNhGo-wHPHGZteja1P-BeuOgnUMOQ/viewform';
+  'https://docs.google.com/forms/d/e/1FAIpQLSdGEXpdngnj7pHR-G4XFNNNykZAT51z7D9NHcWAVgKb9fn9jQ/viewform';
 const FORM_SUBMIT_URL =
-  'https://docs.google.com/forms/d/e/1FAIpQLSdT587_Sx7lxzIseKCUeKNhGo-wHPHGZteja1P-BeuOgnUMOQ/formResponse';
+  'https://docs.google.com/forms/d/e/1FAIpQLSdGEXpdngnj7pHR-G4XFNNNykZAT51z7D9NHcWAVgKb9fn9jQ/formResponse';
 
+// This is AAA International Seafood's actual production "Contact Form" —
+// the one with 144+ real responses already linked to their Google Sheet.
+// (An earlier version of this relay pointed at a different, unrelated
+// Google Form that happened to share a similar structure; submissions
+// were landing there instead of the sheet the business actually checks.)
 const FIELD_MAP = {
-  name: 'entry.1552618580',
-  business: 'entry.1901319334',
-  email: 'entry.753801335',
-  phone: 'entry.825330940',
-  message: 'entry.1503377513',
+  name: 'entry.1662757913',
+  business: 'entry.825130784',
+  city: 'entry.1974016327',
+  phone: 'entry.1801123652',
+  email: 'entry.1435231468',
+  language: 'entry.1526857845',
+  message: 'entry.615314997',
 };
 
 function extractHidden(html, name) {
@@ -61,12 +68,14 @@ export async function onRequestPost(context) {
 
   const name = (form.get('name') || '').toString().trim();
   const business = (form.get('business') || '').toString().trim();
-  const email = (form.get('email') || '').toString().trim();
+  const city = (form.get('city') || '').toString().trim();
   const phone = (form.get('phone') || '').toString().trim();
+  const email = (form.get('email') || '').toString().trim();
+  const language = (form.get('language') || '').toString().trim();
   const message = (form.get('message') || '').toString().trim();
 
-  if (!name || !business || !email || !phone) {
-    return json({ ok: false, error: 'Please fill in name, business, email, and phone.' }, 400);
+  if (!name || !business || !city || !phone || !email || !language) {
+    return json({ ok: false, error: 'Please fill in name, business, city, phone, email, and preferred language.' }, 400);
   }
 
   // Honeypot: a hidden field real visitors never fill in.
@@ -104,8 +113,10 @@ export async function onRequestPost(context) {
   const params = new URLSearchParams();
   params.set(FIELD_MAP.name, name);
   params.set(FIELD_MAP.business, business);
-  params.set(FIELD_MAP.email, email);
+  params.set(FIELD_MAP.city, city);
   params.set(FIELD_MAP.phone, phone);
+  params.set(FIELD_MAP.email, email);
+  params.set(FIELD_MAP.language, language);
   params.set(FIELD_MAP.message, message);
   params.set('fvv', fvv);
   if (partialResponse) params.set('partialResponse', partialResponse);
