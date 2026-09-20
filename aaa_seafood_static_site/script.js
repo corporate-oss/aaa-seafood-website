@@ -68,3 +68,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
   statEls.forEach(function (el) { statObserver.observe(el); });
 });
+
+// Contact form — posts to our Google Form's backend via a hidden iframe so
+// the page keeps its own look instead of showing Google's embedded styling.
+// Responses still land in the same Google Form / spreadsheet as before.
+document.addEventListener('DOMContentLoaded', function () {
+  var form = document.getElementById('contact-form');
+  var iframe = document.getElementById('hidden_iframe');
+  var note = document.getElementById('cf-note');
+  if (!form || !iframe || !note) return;
+
+  var submitted = false;
+
+  form.addEventListener('submit', function () {
+    submitted = true;
+    note.textContent = '';
+    note.classList.remove('success');
+  });
+
+  iframe.addEventListener('load', function () {
+    if (!submitted) return; // ignore the iframe's initial blank load on page load
+    submitted = false;
+    note.textContent = "Thanks — your message is on its way. We'll be in touch shortly.";
+    note.classList.add('success');
+    form.reset();
+  });
+});
