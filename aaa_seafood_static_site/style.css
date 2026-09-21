@@ -52,6 +52,8 @@ header.site-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  row-gap: 8px;
   padding: 14px 24px;
   border-bottom: 1px solid var(--border);
   background: var(--bg);
@@ -107,7 +109,8 @@ header.site-header.scrolled {
 nav.site-nav ul {
   list-style: none;
   display: flex;
-  gap: 28px;
+  flex-wrap: wrap;
+  gap: 8px 28px;
   margin: 0;
   padding: 0;
 }
@@ -134,7 +137,7 @@ nav.site-nav a.active {
   cursor: pointer;
 }
 
-@media (max-width: 820px) {
+@media (max-width: 820px) and (hover: none) and (pointer: coarse) {
   /* Grid keeps the logo/toggle locked to one row (the logo shrinks and
      truncates with an ellipsis instead) while the nav gets its own full
      row below — a flex row would let the toggle get bumped down too. */
@@ -207,7 +210,7 @@ nav.site-nav a.active {
   padding: 60px 24px;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 700px) and (hover: none) and (pointer: coarse) {
   .hero, .hero-overlay {
     min-height: 460px;
   }
@@ -286,7 +289,7 @@ nav.site-nav a.active {
 .hero-overlay .stat-label,
 .stats-dark .stat-label { color: var(--on-ink-dim); }
 
-@media (max-width: 700px) {
+@media (max-width: 700px) and (hover: none) and (pointer: coarse) {
   .hero-stats { gap: 14px; }
   .hero-stats > div { width: 92px; height: 92px; }
   .hero-stats .stat-num { font-size: 1.4rem; }
@@ -359,7 +362,7 @@ nav.site-nav a.active {
   margin: 0 auto;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 700px) and (hover: none) and (pointer: coarse) {
   .trust-strip { padding: 16px 0; }
   .trust-strip .container {
     grid-template-columns: 1fr;
@@ -400,7 +403,7 @@ nav.site-nav a.active {
   line-height: 1.4;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 700px) and (hover: none) and (pointer: coarse) {
   .trust-item .mark {
     width: 26px;
     height: 26px;
@@ -435,7 +438,7 @@ section.stats-dark { background: var(--ink); }
 section.stats-dark .section-title { color: var(--on-ink); }
 section.stats-dark .section-sub { color: var(--on-ink-dim); }
 
-@media (max-width: 700px) {
+@media (max-width: 700px) and (hover: none) and (pointer: coarse) {
   section { padding: 32px 0; }
 }
 
@@ -452,7 +455,7 @@ section.stats-dark .section-sub { color: var(--on-ink-dim); }
   margin: 0 auto 36px;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 700px) and (hover: none) and (pointer: coarse) {
   .section-sub { margin-bottom: 22px; }
 }
 
@@ -561,7 +564,7 @@ section.stats-dark .section-sub { color: var(--on-ink-dim); }
   display: block;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 480px) and (hover: none) and (pointer: coarse) {
   .loin-gallery {
     grid-template-columns: 1fr;
   }
@@ -618,7 +621,7 @@ section.stats-dark .section-sub { color: var(--on-ink-dim); }
 
 .contact-wrap > * { min-width: 0; }
 
-@media (max-width: 780px) {
+@media (max-width: 780px) and (hover: none) and (pointer: coarse) {
   .contact-wrap { grid-template-columns: 1fr; }
 }
 
@@ -692,7 +695,7 @@ section.stats-dark .section-sub { color: var(--on-ink-dim); }
   grid-template-columns: 1fr 1fr;
   gap: 20px;
 }
-@media (max-width: 480px) {
+@media (max-width: 480px) and (hover: none) and (pointer: coarse) {
   .form-row { grid-template-columns: 1fr; }
 }
 .form-note {
@@ -774,7 +777,7 @@ footer.site-footer .fine-print {
 
 .cta-strip .btn-outline:hover { background: #fff; color: var(--tuna); }
 
-@media (max-width: 600px) {
+@media (max-width: 600px) and (hover: none) and (pointer: coarse) {
   .cta-strip {
     padding: 8px 14px;
   }
