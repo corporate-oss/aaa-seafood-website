@@ -221,7 +221,7 @@ function buildConfirmationEmailHtml({ business, city, phone, language, message }
           </div>
           <div class="recap-row">
             <span class="recap-label">Message</span>
-            <span class="recap-value">${escapeHtml(message)}</span>
+            <span class="recap-value">${message ? escapeHtml(message).replace(/\r\n|\r|\n/g, '<br>') : '&mdash;'}</span>
           </div>
         </div>
 
