@@ -31,6 +31,36 @@ document.addEventListener('DOMContentLoaded', function () {
   window.addEventListener('scroll', onScroll, { passive: true });
 });
 
+// Hero still image: zooms in as you scroll down past the hero, and back
+// out as you scroll up. Progress runs 0 → 1 over the hero's own height.
+document.addEventListener('DOMContentLoaded', function () {
+  var hero = document.querySelector('.hero');
+  var bg = hero && hero.querySelector('.hero-bg');
+  if (!bg) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  var MAX_EXTRA_ZOOM = 0.25; // scale goes from 1.00 up to 1.25
+  var ticking = false;
+
+  function update() {
+    ticking = false;
+    var height = hero.offsetHeight || 1;
+    var progress = Math.min(Math.max(window.scrollY / height, 0), 1);
+    bg.style.transform = 'scale(' + (1 + progress * MAX_EXTRA_ZOOM).toFixed(4) + ')';
+  }
+
+  function requestUpdate() {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(update);
+    }
+  }
+
+  update();
+  window.addEventListener('scroll', requestUpdate, { passive: true });
+  window.addEventListener('resize', requestUpdate, { passive: true });
+});
+
 // Hero stat count-up
 document.addEventListener('DOMContentLoaded', function () {
   var statEls = document.querySelectorAll('.stat-num');
