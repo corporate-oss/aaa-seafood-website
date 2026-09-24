@@ -82,15 +82,15 @@ header.site-header.scrolled {
   flex-shrink: 0;
 }
 
+/* The business name wraps onto a second line in very narrow windows
+   instead of being cut off with an ellipsis. */
 .brand-text {
   font-weight: 700;
   letter-spacing: 0.2px;
   font-size: 1.08rem;
   line-height: 1.15;
   min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-wrap: break-word;
 }
 
 .brand-text span {
@@ -101,9 +101,7 @@ header.site-header.scrolled {
   color: var(--muted);
   letter-spacing: 1px;
   text-transform: uppercase;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-wrap: break-word;
 }
 
 nav.site-nav ul {
@@ -137,19 +135,36 @@ nav.site-nav a.active {
   cursor: pointer;
 }
 
-@media (max-width: 820px) and (hover: none) and (pointer: coarse) {
-  /* Grid keeps the logo/toggle locked to one row (the logo shrinks and
-     truncates with an ellipsis instead) while the nav gets its own full
+/* Touch-only phones and small tablets get the hamburger menu. The second
+   query covers phones held sideways (wide but short), where the desktop
+   nav would otherwise eat a big slice of the screen. */
+@media (max-width: 820px) and (hover: none) and (pointer: coarse),
+       (max-height: 500px) and (hover: none) and (pointer: coarse) {
+  /* Grid keeps the logo/toggle locked to one row (the business name wraps
+     under the logo if space is tight) while the nav gets its own full
      row below — a flex row would let the toggle get bumped down too. */
   header.site-header {
     display: grid;
     grid-template-columns: 1fr auto;
     grid-template-areas: "brand toggle" "nav nav";
     align-items: center;
+    row-gap: 0;
     padding: 8px 16px;
   }
   .brand { grid-area: brand; min-width: 0; gap: 8px; }
-  .nav-toggle { grid-area: toggle; display: block; font-size: 1.3rem; }
+  /* 44×44 minimum tap target (WCAG / Apple / Google guidance) */
+  .nav-toggle {
+    grid-area: toggle;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    margin-right: -8px;
+    padding: 0;
+    font-size: 1.3rem;
+    color: var(--ink);
+  }
   nav.site-nav {
     grid-area: nav;
     max-height: 0;
@@ -175,6 +190,12 @@ nav.site-nav a.active {
   .brand img { height: 34px; }
   .brand-text { font-size: 0.82rem; line-height: 1.1; }
   .brand-text span { font-size: 0.52rem; letter-spacing: 0.5px; }
+}
+
+/* Very short mouse-driven windows: let the header scroll away instead of
+   pinning a tall two-row header over a small viewport. */
+@media (max-height: 500px) and (hover: hover) {
+  header.site-header { position: relative; }
 }
 
 /* Hero */
@@ -372,9 +393,20 @@ nav.site-nav a.active {
 
 @media (max-width: 700px) and (hover: none) and (pointer: coarse) {
   .trust-strip { padding: 16px 0; }
-  .trust-strip .container {
+  .trust-strip .container,
+  .trust-strip .container:has(.trust-item:nth-child(2):last-child) {
     grid-template-columns: 1fr;
     gap: 12px;
+  }
+}
+
+/* Layout safety for any narrow window (not touch-gated): the items can't
+   sit side by side this narrow, so stack them rather than run off the edge.
+   The :has() variant is listed so it doesn't outrank this rule. */
+@media (max-width: 560px) {
+  .trust-strip .container,
+  .trust-strip .container:has(.trust-item:nth-child(2):last-child) {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -619,6 +651,64 @@ section.stats-dark .section-sub { color: var(--on-ink-dim); }
   font-size: 0.9rem;
 }
 
+/* Narrow windows: the map shrinks to fit instead of scrolling sideways, and
+   numbered markers plus a legend replace the text labels (which would be
+   too small to read at that scale). */
+.map-num,
+.map-legend { display: none; }
+
+.map-num circle { fill: var(--green); stroke: #f6f1e7; stroke-width: 3; }
+.map-num .hq circle { fill: var(--tuna); }
+.map-num text {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  fill: #fff;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+.map-num .hq text { font-size: 17px; }
+
+.map-legend {
+  list-style: none;
+  max-width: 720px;
+  margin: 18px auto 0;
+  padding: 0;
+  gap: 10px 20px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+}
+.map-legend li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.92rem;
+  line-height: 1.3;
+}
+.map-legend-num {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--green);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.78rem;
+}
+.map-legend .hq .map-legend-num { background: var(--tuna); font-size: 0.62rem; }
+
+@media (max-width: 640px) {
+  .service-map { overflow: visible; padding: 6px; }
+  .service-map svg { min-width: 0; }
+  .map-pin text,
+  .service-map svg > text { display: none; }
+  .map-num { display: inline; }
+  .map-legend { display: grid; }
+  .map-caption { display: none; }
+}
+
 /* Contact */
 .contact-wrap {
   display: grid;
@@ -630,6 +720,12 @@ section.stats-dark .section-sub { color: var(--on-ink-dim); }
 .contact-wrap > * { min-width: 0; }
 
 @media (max-width: 780px) and (hover: none) and (pointer: coarse) {
+  .contact-wrap { grid-template-columns: 1fr; }
+}
+
+/* Layout safety for any narrow window: two columns would squeeze the form
+   and text past the edge, so stack them. */
+@media (max-width: 640px) {
   .contact-wrap { grid-template-columns: 1fr; }
 }
 
@@ -698,9 +794,11 @@ section.stats-dark .section-sub { color: var(--on-ink-dim); }
 }
 .field textarea { resize: vertical; font-family: inherit; }
 .field select { appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235c6259' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 34px; }
+/* Two fields per row when there's room; one per row when the form column
+   gets narrow, in any window. */
 .form-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
   gap: 20px;
 }
 @media (max-width: 480px) and (hover: none) and (pointer: coarse) {
@@ -738,7 +836,7 @@ footer.site-footer h4 {
 
 footer.site-footer a { color: var(--on-ink-dim); }
 footer.site-footer a:hover { color: var(--on-ink); }
-footer.site-footer p { color: var(--on-ink-dim); font-size: 0.9rem; line-height: 1.7; }
+footer.site-footer p { color: var(--on-ink-dim); font-size: 0.9rem; line-height: 1.7; overflow-wrap: anywhere; }
 
 footer.site-footer .fine-print {
   width: 100%;

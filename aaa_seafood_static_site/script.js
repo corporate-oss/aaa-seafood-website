@@ -37,6 +37,13 @@ document.addEventListener('DOMContentLoaded', function () {
   var hero = document.querySelector('.hero');
   var bg = hero && hero.querySelector('.hero-bg');
   if (!bg) return;
+
+  // If the image ever fails to load, hide it so no broken-image icon shows;
+  // the hero's dark background keeps the headline readable.
+  var hideBg = function () { bg.style.visibility = 'hidden'; };
+  if (bg.complete && bg.naturalWidth === 0) hideBg();
+  else bg.addEventListener('error', hideBg);
+
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   var MAX_EXTRA_ZOOM = 0.25; // scale goes from 1.00 up to 1.25
