@@ -296,6 +296,73 @@ async function sendConfirmationEmail(env, { business, city, phone, email, langua
   }
 }
 
+// --- Email format check ------------------------------------------------------
+//
+// The browser's type="email" check lets through addresses with no domain
+// ending (e.g. "name@gmail") and can be bypassed entirely by scripts, so the
+// server checks too. Deliberately permissive on the part before the @ (plus
+// signs, dots, etc. are all fine) — it only insists on a real-looking domain
+// with a dot and an ending like .com, so typos that would make the
+// confirmation email bounce get caught while every normal address passes.
+const EMAIL_PATTERN =
+  /^[^\s@<>()[\]\\,;:"]{1,64}@(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+(?:[A-Za-z]{2,63}|xn--[A-Za-z0-9-]{1,59})$/;
+
+function isValidEmail(email) {
+  return email.length <= 254 && EMAIL_PATTERN.test(email);
+}
+
+// --- Submission rate limits -------------------------------------------------
+//
+// Stops a script (or someone hammering the button) from flooding the Sheet.
+// Counts are kept in memory on each Cloudflare server, so they're a
+// best-effort guard rather than a global counter — but a flood from one
+// place keeps landing on the same server, which is exactly what this is for.
+// Real customers are nowhere near these numbers.
+const TEN_MINUTES = 10 * 60 * 1000;
+const ONE_DAY = 24 * 60 * 60 * 1000;
+const LIMITS = {
+  perIpTenMinutes: 3,   // submissions from one address within 10 minutes
+  perIpDay: 10,         // submissions from one address within 24 hours
+  serverTenMinutes: 20, // recorded submissions per server within 10 minutes
+};
+const RATE_LIMITED_MESSAGE =
+  "You've sent several messages in a short time. Please wait a few minutes and try again, or call us at 323-582-8003.";
+
+const hitsByIp = new Map(); // ip -> timestamps (ms) within the last day
+let recordedHits = [];      // timestamps of submissions forwarded to the Sheet
+
+function countSince(list, since) {
+  let n = 0;
+  for (const t of list) if (t > since) n++;
+  return n;
+}
+
+// Returns true (and counts the attempt) if this address is still under its
+// limits; false if it should be turned away.
+function allowIp(ip, now) {
+  const recent = (hitsByIp.get(ip) || []).filter((t) => t > now - ONE_DAY);
+  if (recent.length >= LIMITS.perIpDay || countSince(recent, now - TEN_MINUTES) >= LIMITS.perIpTenMinutes) {
+    hitsByIp.set(ip, recent);
+    return false;
+  }
+  recent.push(now);
+  hitsByIp.set(ip, recent);
+  // Keep memory bounded: occasionally drop addresses with no recent activity.
+  if (hitsByIp.size > 2000) {
+    for (const [key, times] of hitsByIp) {
+      if (!times.length || times[times.length - 1] <= now - ONE_DAY) hitsByIp.delete(key);
+    }
+  }
+  return true;
+}
+
+function allowRecorded(now) {
+  recordedHits = recordedHits.filter((t) => t > now - TEN_MINUTES);
+  if (recordedHits.length >= LIMITS.serverTenMinutes) return false;
+  recordedHits.push(now);
+  return true;
+}
+
 export async function onRequestPost(context) {
   let form;
   try {
@@ -316,11 +383,31 @@ export async function onRequestPost(context) {
     return json({ ok: false, error: 'Please fill in name, business, city, phone, email, and preferred language.' }, 400);
   }
 
+  if (!isValidEmail(email)) {
+    return json({ ok: false, error: 'Please check your email address — it should look like name@example.com — so we can send your confirmation.' }, 400);
+  }
+
+  // Rate limits. Every complete submission counts against the sender's
+  // address (including ones caught by the honeypot below, so a bot gets
+  // cut off either way); invalid ones above don't, so a visitor fixing a
+  // typo is never penalized.
+  const now = Date.now();
+  const ip = context.request.headers.get('CF-Connecting-IP') || 'unknown';
+  if (!allowIp(ip, now)) {
+    return json({ ok: false, error: RATE_LIMITED_MESSAGE }, 429);
+  }
+
   // Honeypot: a hidden field real visitors never fill in.
   const honeypot = (form.get('company_website') || '').toString().trim();
   if (honeypot) {
     // Pretend success so bots don't learn anything, but never forward it.
     return json({ ok: true }, 200);
+  }
+
+  // Server-wide ceiling on what actually gets written to the Sheet, as a
+  // backstop against a flood spread across many addresses.
+  if (!allowRecorded(now)) {
+    return json({ ok: false, error: RATE_LIMITED_MESSAGE }, 429);
   }
 
   let viewHtml;
