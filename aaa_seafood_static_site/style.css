@@ -1,5 +1,5 @@
 /* AAA International Seafood — shared styles */
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+/* Fonts load from <link> tags in each page head (faster than @import). */
 
 :root {
   --green: #2e4a3c;
@@ -504,6 +504,12 @@ section.stats-dark .section-sub { color: var(--on-ink-dim); }
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
   gap: 22px;
+}
+
+/* Homepage featured grid: three across on wide screens so its six items
+   make two even rows instead of four plus two. */
+@media (min-width: 900px) {
+  .product-grid--featured { grid-template-columns: repeat(3, 1fr); }
 }
 
 .product-card {

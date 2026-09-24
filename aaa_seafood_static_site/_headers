@@ -1,0 +1,19 @@
+# Cloudflare Pages response headers (applies to the static site; the
+# /api/contact function sets its own).
+#
+# Content-Security-Policy: only this site's own scripts may run (no inline
+# or third-party JS), styles/fonts may also come from Google Fonts, the page
+# can only talk to its own server, and no other site may frame it.
+
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()
+  Strict-Transport-Security: max-age=31536000
+
+# Photos rarely change: let browsers reuse them for a day (and serve the
+# cached copy while quietly re-checking for up to a week after that).
+/images/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800

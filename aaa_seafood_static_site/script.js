@@ -20,6 +20,18 @@ document.addEventListener('DOMContentLoaded', function () {
   targets.forEach(function (el) { observer.observe(el); });
 });
 
+// Mobile menu button. Lives here rather than in an inline onclick so the
+// site's Content-Security-Policy can forbid inline scripts entirely.
+document.addEventListener('DOMContentLoaded', function () {
+  var toggle = document.querySelector('.nav-toggle');
+  var nav = document.getElementById('site-nav');
+  if (!toggle || !nav) return;
+  toggle.addEventListener('click', function () {
+    var open = nav.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+});
+
 // Header shadow once the page has scrolled
 document.addEventListener('DOMContentLoaded', function () {
   var header = document.querySelector('header.site-header');
