@@ -854,6 +854,99 @@ footer.site-footer .fine-print {
   text-align: center;
 }
 
+/* Wholesale by the pallet (homepage band + products note) */
+.pallet-wrap {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 48px;
+  align-items: center;
+}
+
+/* Stack in any narrow window so the card never squeezes the copy. */
+@media (max-width: 760px) {
+  .pallet-wrap { grid-template-columns: 1fr; gap: 24px; }
+}
+
+.pallet-eyebrow {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--tuna);
+  margin-bottom: 6px;
+}
+
+.pallet-copy h2 {
+  margin: 0 0 14px;
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  text-wrap: balance;
+}
+
+.pallet-copy p {
+  margin: 0 0 12px;
+  color: var(--muted);
+  line-height: 1.65;
+  max-width: 560px;
+}
+
+.pallet-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+/* Outline button for light backgrounds */
+.btn-line {
+  background: transparent;
+  color: var(--green);
+  border: 2px solid var(--green);
+  padding: 11px 26px;
+}
+.btn-line:hover { background: var(--green); color: #fff; filter: none; box-shadow: 0 10px 20px rgba(46,74,60,0.22); }
+
+.pallet-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 26px 28px 12px;
+}
+
+.pallet-icon {
+  display: block;
+  width: 64px;
+  height: 48px;
+  color: var(--green);
+  margin-bottom: 6px;
+}
+
+.pallet-note {
+  max-width: 640px;
+  margin: -14px auto 0;
+  padding: 12px 18px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  text-align: center;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.pallet-note strong { color: var(--ink); }
+.pallet-note a {
+  color: var(--tuna);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) and (hover: none) and (pointer: coarse) {
+  .pallet-note { margin-top: -6px; font-size: 0.85rem; padding: 10px 14px; }
+  .pallet-card { padding: 20px 20px 8px; }
+  .pallet-ctas .btn { flex: 1 1 auto; text-align: center; }
+}
+
 /* Contact CTA bar */
 .cta-strip {
   background: var(--tuna);
