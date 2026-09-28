@@ -172,8 +172,15 @@ nav.site-nav a.active {
     opacity: 0;
     transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
   }
+  /* Never taller than the screen below the logo row: on a phone held
+     sideways the list scrolls inside the menu instead of running off the
+     bottom where the last links couldn't be reached. */
   nav.site-nav.open {
     max-height: 400px;
+    max-height: min(400px, calc(100vh - 64px));
+    max-height: min(400px, calc(100dvh - 64px));
+    overflow-y: auto;
+    overscroll-behavior: contain;
     opacity: 1;
   }
   nav.site-nav ul {
@@ -190,6 +197,12 @@ nav.site-nav a.active {
   .brand img { height: 34px; }
   .brand-text { font-size: 0.82rem; line-height: 1.1; }
   .brand-text span { font-size: 0.52rem; letter-spacing: 0.5px; }
+}
+
+/* Phones held sideways: tighter menu rows so all six links fit. */
+@media (max-height: 500px) and (hover: none) and (pointer: coarse) {
+  nav.site-nav ul { margin-top: 8px; }
+  nav.site-nav a { padding: 10px 4px; }
 }
 
 /* Very short mouse-driven windows: let the header scroll away instead of
@@ -936,6 +949,37 @@ footer.site-footer .fine-print {
   .pallet-ctas { width: 100%; }
   .pallet-ctas .btn { flex: 1 1 auto; text-align: center; }
 }
+
+/* Wholesale page: product-line cards (three across, one column when narrow) */
+.line-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 22px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.line-card { display: block; }
+.line-card .thumb { aspect-ratio: 4 / 3; }
+.line-card .label { font-size: 1rem; }
+.line-card .label span {
+  display: block;
+  margin-top: 3px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Phones: shorter photos so the three lines don't make a long scroll. */
+@media (max-width: 560px) {
+  .line-grid { gap: 14px; }
+  .line-card .thumb { aspect-ratio: 16 / 9; }
+}
+
+/* Links like /products#fresh-products land below the sticky header. */
+.category-block { scroll-margin-top: 140px; }
 
 /* Contact CTA bar */
 .cta-strip {
