@@ -551,6 +551,14 @@ section.stats-dark .section-sub { color: var(--on-ink-dim); }
   .section-sub { margin-bottom: 22px; }
 }
 
+/* Inner pages (About, Products, Wholesale, Delivery, Contact): the page
+   title sits closer to the menu. */
+header.site-header + section:not(.not-found) { padding-top: 36px; }
+header.site-header + section:not(.not-found) h1.section-title { margin-top: 0; }
+@media (max-width: 700px) and (hover: none) and (pointer: coarse) {
+  header.site-header + section:not(.not-found) { padding-top: 22px; }
+}
+
 /* Product grid */
 .product-grid {
   display: grid;
