@@ -104,14 +104,28 @@ header.site-header.scrolled {
   overflow-wrap: break-word;
 }
 
+/* The menu always stays on one row. As the window narrows, the spacing and
+   text tighten and the longer labels shorten ("Delivery Information" ->
+   "Delivery"); in an extremely narrow window the row scrolls sideways on
+   its own rather than wrapping. */
+nav.site-nav {
+  min-width: 0;
+  max-width: 100%;
+}
+
 nav.site-nav ul {
   list-style: none;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 8px 28px;
-  margin: 0;
-  padding: 0;
+  /* padding keeps the active underline inside the scroll area; the
+     negative margin cancels it out so the header height is unchanged */
+  margin: -10px 0;
+  padding: 10px 0;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
+nav.site-nav ul::-webkit-scrollbar { display: none; }
 
 nav.site-nav a {
   font-weight: 600;
@@ -119,12 +133,32 @@ nav.site-nav a {
   color: var(--ink);
   padding: 6px 2px;
   border-bottom: 2px solid transparent;
+  white-space: nowrap;
 }
 
 nav.site-nav a:hover,
 nav.site-nav a.active {
   color: var(--green);
   border-bottom-color: var(--green);
+}
+
+@media (max-width: 780px) {
+  nav.site-nav ul { gap: 8px 18px; }
+  nav.site-nav a { font-size: 0.88rem; }
+}
+@media (max-width: 640px) {
+  header.site-header { padding-left: 16px; padding-right: 16px; }
+  nav.site-nav .nav-long { display: none; }
+  nav.site-nav ul { gap: 8px 16px; }
+}
+@media (max-width: 480px) {
+  nav.site-nav ul { gap: 8px 12px; }
+  nav.site-nav a { font-size: 0.8rem; }
+}
+@media (max-width: 430px) {
+  header.site-header { padding-left: 12px; padding-right: 12px; }
+  nav.site-nav ul { gap: 8px 9px; }
+  nav.site-nav a { font-size: 0.74rem; padding-left: 1px; padding-right: 1px; }
 }
 
 .nav-toggle {
@@ -187,13 +221,18 @@ nav.site-nav a.active {
     flex-direction: column;
     gap: 0;
     border-top: 1px solid var(--border);
-    margin-top: 14px;
+    margin: 14px 0 0;
+    padding: 0;
+    overflow: visible;
   }
   nav.site-nav a {
     display: block;
     padding: 14px 4px;
     border-bottom: 1px solid var(--border);
+    font-size: 0.95rem;
   }
+  /* The drop-down menu has room for the full labels. */
+  nav.site-nav .nav-long { display: inline; }
   .brand img { height: 34px; }
   .brand-text { font-size: 0.82rem; line-height: 1.1; }
   .brand-text span { font-size: 0.52rem; letter-spacing: 0.5px; }
