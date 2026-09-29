@@ -878,40 +878,78 @@ header.site-header + section:not(.not-found) h1.section-title { margin-top: 0; }
 .form-note.success { color: var(--green); font-weight: 600; }
 .form-note.error { color: var(--tuna); font-weight: 600; }
 
-/* Footer */
+/* Footer: one compact band with the essentials and a link to the
+   Contact page for everything else. */
 footer.site-footer {
   background: var(--ink);
   color: var(--on-ink-dim);
-  padding: 40px 0 26px;
+  padding: 22px 0 14px;
   margin-top: 0;
 }
 
-footer.site-footer .container {
+footer.site-footer .footer-main {
   display: flex;
   flex-wrap: wrap;
-  gap: 24px;
+  align-items: center;
   justify-content: space-between;
+  gap: 12px 32px;
 }
 
-footer.site-footer h4 {
-  margin: 0 0 10px;
-  font-size: 1.05rem;
+footer.site-footer .footer-info { min-width: 0; }
+
+footer.site-footer .footer-name {
+  margin: 0 0 4px;
+  font-weight: 700;
   font-style: italic;
+  font-size: 0.95rem;
+  letter-spacing: 0.3px;
   color: var(--on-ink);
+}
+
+footer.site-footer .footer-facts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 2px;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+footer.site-footer .footer-facts li { white-space: nowrap; }
+footer.site-footer .footer-facts li + li::before {
+  content: "\00B7";
+  margin: 0 10px;
+  color: rgba(243,239,228,0.35);
 }
 
 footer.site-footer a { color: var(--on-ink-dim); }
 footer.site-footer a:hover { color: var(--on-ink); }
-footer.site-footer p { color: var(--on-ink-dim); font-size: 0.9rem; line-height: 1.7; overflow-wrap: anywhere; }
+
+footer.site-footer .footer-cta {
+  color: var(--on-ink);
+  font-weight: 600;
+  font-size: 0.88rem;
+  white-space: nowrap;
+  padding-bottom: 2px;
+  border-bottom: 1px solid rgba(243,239,228,0.35);
+}
+footer.site-footer .footer-cta:hover { border-bottom-color: var(--on-ink); }
 
 footer.site-footer .fine-print {
-  width: 100%;
+  margin: 14px 0 0;
+  padding-top: 10px;
   border-top: 1px solid rgba(243,239,228,0.14);
-  margin-top: 26px;
-  padding-top: 16px;
-  font-size: 0.82rem;
+  font-size: 0.76rem;
   color: var(--on-ink-dim);
   text-align: center;
+}
+
+/* Narrow screens: one fact per line (no separator dots). */
+@media (max-width: 640px) {
+  footer.site-footer .footer-facts { flex-direction: column; row-gap: 0; }
+  footer.site-footer .footer-facts li { white-space: normal; overflow-wrap: anywhere; }
+  footer.site-footer .footer-facts li + li::before { content: none; }
 }
 
 /* Wholesale by the pallet (homepage band + products note) */
