@@ -32,6 +32,42 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
+// Products page: each category shows its first few products, with a
+// "Show all" button that opens the rest in place. Without JavaScript the
+// buttons stay hidden and every product simply shows.
+document.addEventListener('DOMContentLoaded', function () {
+  var VISIBLE = 4;
+  var blocks = document.querySelectorAll('.category-block');
+  Array.prototype.forEach.call(blocks, function (block) {
+    var grid = block.querySelector('.product-grid');
+    var wrap = block.querySelector('.show-all-wrap');
+    var btn = wrap && wrap.querySelector('.show-all');
+    if (!grid || !btn) return;
+    var total = grid.querySelectorAll('.product-card').length;
+    if (total <= VISIBLE) return;
+    var noun = btn.getAttribute('data-noun') || 'products';
+
+    function setOpen(open) {
+      block.classList.toggle('is-collapsed', !open);
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      btn.textContent = open ? 'Show fewer' : 'Show all ' + total + ' ' + noun;
+    }
+
+    setOpen(false);
+    wrap.hidden = false;
+
+    btn.addEventListener('click', function () {
+      var opening = block.classList.contains('is-collapsed');
+      setOpen(opening);
+      // After closing a long list, bring the category back into view if
+      // the collapse left it above the top of the screen.
+      if (!opening && block.getBoundingClientRect().top < 0) {
+        block.scrollIntoView({ block: 'start' });
+      }
+    });
+  });
+});
+
 // Header shadow once the page has scrolled
 document.addEventListener('DOMContentLoaded', function () {
   var header = document.querySelector('header.site-header');

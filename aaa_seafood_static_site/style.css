@@ -978,6 +978,27 @@ footer.site-footer .fine-print {
   .line-card .thumb { aspect-ratio: 16 / 9; }
 }
 
+/* Products page: four across (two on narrow screens) so each category's
+   first four products make one tidy row before its "Show all" button. */
+.category-block .product-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+@media (max-width: 719px) {
+  .category-block .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .category-block .product-card .label { font-size: 0.85rem; padding: 10px 12px; }
+}
+
+.category-block.is-collapsed .product-grid > .product-card:nth-child(n+5),
+.category-block.is-collapsed .loin-gallery,
+.category-block.is-collapsed .loin-intro {
+  display: none;
+}
+
+.show-all-wrap {
+  text-align: center;
+  margin-top: 26px;
+}
+
 /* Links like /products#fresh-products land below the sticky header. */
 .category-block { scroll-margin-top: 140px; }
 
