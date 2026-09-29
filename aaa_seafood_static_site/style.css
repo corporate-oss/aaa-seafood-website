@@ -1043,7 +1043,17 @@ footer.site-footer .fine-print {
 
 .show-all-wrap {
   text-align: center;
-  margin-top: 26px;
+  margin-top: 20px;
+}
+
+/* Products catalog: tighter spacing between categories, and no extra
+   gap stacked under the last one before the red contact bar. */
+section.catalog { padding-top: 40px; padding-bottom: 44px; }
+.catalog .category-block { margin-bottom: 44px; }
+.catalog .category-block:last-child { margin-bottom: 0; }
+@media (max-width: 700px) and (hover: none) and (pointer: coarse) {
+  section.catalog { padding-top: 24px; padding-bottom: 32px; }
+  .catalog .category-block { margin-bottom: 32px; }
 }
 
 /* Links like /products#fresh-products land below the sticky header. */
@@ -1053,8 +1063,14 @@ footer.site-footer .fine-print {
 .cta-strip {
   background: var(--tuna);
   color: #fff;
-  padding: 16px 24px;
+  /* side spacing comes from .container, so the text lines up with the
+     page content above instead of being indented twice */
+  padding: 16px 0;
 }
+
+/* The text takes the free space and wraps onto a second line before the
+   button has to drop below it. */
+.cta-strip .container > div { flex: 1 1 260px; min-width: 0; }
 
 .cta-strip .container {
   display: flex;
@@ -1086,7 +1102,7 @@ footer.site-footer .fine-print {
 
 @media (max-width: 600px) and (hover: none) and (pointer: coarse) {
   .cta-strip {
-    padding: 8px 14px;
+    padding: 8px 0;
   }
   .cta-strip .container {
     flex-direction: row;
@@ -1095,6 +1111,7 @@ footer.site-footer .fine-print {
     align-items: center;
     gap: 10px;
   }
+  .cta-strip .container > div { flex-basis: auto; }
   .cta-strip h2 { font-size: 0.82rem; line-height: 1.15; }
   .cta-strip p { display: none; }
   .cta-strip .btn-outline { padding: 6px 14px; font-size: 0.76rem; }
