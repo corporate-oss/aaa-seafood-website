@@ -267,8 +267,9 @@ nav.site-nav a.active {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* keeps the cut face of the loin in view when a phone crops the sides */
-  object-position: 75% 50%;
+  /* the photo is cropped with the main loin dead centre; keep it there on
+     every screen shape */
+  object-position: 50% 50%;
   opacity: 0.5;
   display: block;
   z-index: 0;
