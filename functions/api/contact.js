@@ -18,10 +18,11 @@
 // before. Nothing about the destination changed — only how the hand-off
 // to it happens.
 //
-// After a successful hand-off, it also sends the visitor a branded
-// confirmation email via Resend (see buildConfirmationEmailHtml /
-// sendConfirmationEmail below). That step runs in the background via
-// context.waitUntil so a slow or failed email never turns an otherwise
+// After a successful hand-off, it also sends two emails via Resend: a
+// branded confirmation to the visitor (buildConfirmationEmailHtml /
+// sendConfirmationEmail) and a copy of the inquiry to the sales team
+// (INQUIRY_NOTIFY_TO, sendInquiryNotification). Both run in the background
+// via context.waitUntil so a slow or failed email never turns an otherwise
 // successful submission into an error for the visitor — their message is
 // already safely recorded in the Sheet by that point regardless.
 
@@ -43,7 +44,11 @@ const FIELD_MAP = {
   email: 'entry.1435231468',
   language: 'entry.1526857845',
   message: 'entry.615314997',
+  interest: 'entry.2092425535', // "Interested In" (short answer, added Sep 2026)
 };
+
+// Choices offered on the site's "Interested In" dropdown.
+const INTEREST_OPTIONS = ['Frozen products', 'Fresh products', 'Pallet orders', 'Other'];
 
 // The "Preferred Contact Language" question renders as a native dropdown,
 // and Google Forms pairs every dropdown/multiple-choice question with a
@@ -94,7 +99,7 @@ function escapeHtml(str) {
 // values. Matches the site's design system (dark green header, cream recap
 // box, red contact strip) and stacks the contact strip to one column under
 // 600px for phone-width inboxes.
-function buildConfirmationEmailHtml({ business, city, phone, language, message }) {
+function buildConfirmationEmailHtml({ business, city, phone, language, interest, message }) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -172,7 +177,7 @@ function buildConfirmationEmailHtml({ business, city, phone, language, message }
     .recap-value { font-size: 0.88rem !important; }
     .contact-strip { padding: 18px 20px !important; }
 
-    /* Stack the address/hours/phone columns instead of squeezing 3 across */
+    /* Stack the address/phone columns on narrow screens */
     .contact-strip table, .contact-strip tr, .contact-strip .cs-cell {
       display: block !important;
       width: 100% !important;
@@ -220,6 +225,10 @@ function buildConfirmationEmailHtml({ business, city, phone, language, message }
             <span class="recap-value">${escapeHtml(language)}</span>
           </div>
           <div class="recap-row">
+            <span class="recap-label">Interested In</span>
+            <span class="recap-value">${interest ? escapeHtml(interest) : '&mdash;'}</span>
+          </div>
+          <div class="recap-row">
             <span class="recap-label">Message</span>
             <span class="recap-value">${message ? escapeHtml(message).replace(/\r\n|\r|\n/g, '<br>') : '&mdash;'}</span>
           </div>
@@ -237,10 +246,6 @@ function buildConfirmationEmailHtml({ business, city, phone, language, message }
             <td class="cs-cell">
               <span class="label">Address</span>
               2535 E 28th Street,<br>Vernon, CA 90058
-            </td>
-            <td class="cs-cell">
-              <span class="label">Hours</span>
-              Mon–Sat, 6am–3pm
             </td>
             <td class="cs-cell">
               <span class="label">Phone</span>
@@ -267,14 +272,14 @@ function buildConfirmationEmailHtml({ business, city, phone, language, message }
 // context.waitUntil below) rather than propagated, since a confirmation
 // email failing should never make an already-successful form submission
 // look like it failed.
-async function sendConfirmationEmail(env, { business, city, phone, email, language, message }) {
+async function sendConfirmationEmail(env, { business, city, phone, email, language, interest, message }) {
   const apiKey = env.RESEND_API_KEY;
   if (!apiKey) {
     console.error('RESEND_API_KEY is not configured — skipping confirmation email.');
     return;
   }
 
-  const html = buildConfirmationEmailHtml({ business, city, phone, language, message });
+  const html = buildConfirmationEmailHtml({ business, city, phone, language, interest, message });
 
   const resp = await fetch(RESEND_API_URL, {
     method: 'POST',
@@ -293,6 +298,122 @@ async function sendConfirmationEmail(env, { business, city, phone, email, langua
   if (!resp.ok) {
     const errText = await resp.text().catch(() => '');
     console.error(`Resend API error (${resp.status}): ${errText}`);
+  }
+}
+
+// --- Inquiry copy for the sales team (sent via Resend) -----------------------
+//
+// Every recorded submission is also emailed to the team so nobody has to
+// watch the Sheet. Sent from the same no-reply address as the confirmation;
+// the customer's email is a clickable link in the body for replying.
+const INQUIRY_NOTIFY_TO = 'hitomifukui@aaainternationalseafood.com';
+
+function oneLine(str, max) {
+  const flat = String(str).replace(/[\r\n\t]+/g, ' ').replace(/\s{2,}/g, ' ').trim();
+  return flat.length > max ? flat.slice(0, max - 1) + '…' : flat;
+}
+
+function receivedAt() {
+  try {
+    return new Date().toLocaleString('en-US', {
+      timeZone: 'America/Los_Angeles',
+      weekday: 'short', month: 'short', day: 'numeric', year: 'numeric',
+      hour: 'numeric', minute: '2-digit', timeZoneName: 'short',
+    });
+  } catch (err) {
+    return new Date().toISOString();
+  }
+}
+
+function buildInquiryEmail({ name, business, city, phone, email, language, interest, message, received }) {
+  const telHref = 'tel:' + String(phone).replace(/[^0-9+]/g, '');
+  const cell = 'padding:10px 14px;border-bottom:1px solid #e9e1cd;vertical-align:top;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Helvetica,Arial,sans-serif;';
+  const label = cell + 'width:150px;font-size:12px;font-weight:600;letter-spacing:0.4px;text-transform:uppercase;color:#5c6259;';
+  const value = cell + 'font-size:15px;line-height:1.5;color:#12181a;';
+  const link = 'color:#c1392b;text-decoration:underline;';
+  const rows = [
+    ['Name', escapeHtml(name)],
+    ['Restaurant / Business', escapeHtml(business)],
+    ['City', escapeHtml(city)],
+    ['Phone', `<a href="${escapeHtml(telHref)}" style="${link}">${escapeHtml(phone)}</a>`],
+    ['Email', `<a href="mailto:${escapeHtml(email)}" style="${link}">${escapeHtml(email)}</a>`],
+    ['Preferred Language', escapeHtml(language)],
+    ['Interested In', interest ? escapeHtml(interest) : '&mdash;'],
+    ['Message', message ? escapeHtml(message).replace(/\r\n|\r|\n/g, '<br>') : '&mdash;'],
+    ['Received', escapeHtml(received)],
+  ].map(([k, v]) => `<tr><td style="${label}">${k}</td><td style="${value}">${v}</td></tr>`).join('\n');
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>New website inquiry</title></head>
+<body style="margin:0;padding:24px 12px;background:#f6f1e7;">
+  <table role="presentation" width="100%" style="max-width:640px;margin:0 auto;border-collapse:collapse;background:#ffffff;border:1px solid #dcd2b8;">
+    <tr><td style="background:#1f332a;padding:18px 20px;font-family:Georgia,'Times New Roman',serif;color:#f3efe4;font-size:18px;">New website inquiry</td></tr>
+    <tr><td style="padding:16px 20px 6px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:14px;line-height:1.5;color:#33362f;">
+      Someone just sent a message through the contact form on the website. It's also saved in the contact form Google Sheet.
+    </td></tr>
+    <tr><td style="padding:10px 20px 18px;">
+      <table role="presentation" width="100%" style="border-collapse:collapse;border:1px solid #dcd2b8;background:#fbf8f1;">
+${rows}
+      </table>
+    </td></tr>
+    <tr><td style="padding:0 20px 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;line-height:1.5;color:#8a8578;">
+      To answer, email or call the customer using the details above &mdash; replying to this email won't reach them.
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+  const text = [
+    'New website inquiry',
+    '',
+    `Name: ${name}`,
+    `Restaurant / Business: ${business}`,
+    `City: ${city}`,
+    `Phone: ${phone}`,
+    `Email: ${email}`,
+    `Preferred Language: ${language}`,
+    `Interested In: ${interest || '-'}`,
+    `Message: ${message || '-'}`,
+    `Received: ${received}`,
+    '',
+    "Also saved in the contact form Google Sheet. To answer, email or call the customer using the details above - replying to this email won't reach them.",
+  ].join('\n');
+
+  return { html, text };
+}
+
+// Best-effort, like the confirmation email: failures are logged, never shown
+// to the visitor.
+async function sendInquiryNotification(env, fields) {
+  const apiKey = env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.error('RESEND_API_KEY is not configured — skipping inquiry notification.');
+    return;
+  }
+
+  const { html, text } = buildInquiryEmail({ ...fields, received: receivedAt() });
+  const subject = `New website inquiry: ${oneLine(fields.business, 80)} (${oneLine(fields.city, 40)})` +
+    (fields.interest ? ` — ${fields.interest}` : '');
+
+  const resp = await fetch(RESEND_API_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: EMAIL_FROM,
+      to: INQUIRY_NOTIFY_TO,
+      subject,
+      html,
+      text,
+    }),
+  });
+
+  if (!resp.ok) {
+    const errText = await resp.text().catch(() => '');
+    console.error(`Resend API error on inquiry notification (${resp.status}): ${errText}`);
   }
 }
 
@@ -378,6 +499,10 @@ export async function onRequestPost(context) {
   const email = (form.get('email') || '').toString().trim();
   const language = (form.get('language') || '').toString().trim();
   const message = (form.get('message') || '').toString().trim();
+  // Optional on the server (older copies of the page don't send it); any
+  // unexpected value is kept, but flattened to one short line.
+  const interestRaw = (form.get('interest') || '').toString().trim();
+  const interest = INTEREST_OPTIONS.includes(interestRaw) ? interestRaw : oneLine(interestRaw, 60);
 
   if (!name || !business || !city || !phone || !email || !language) {
     return json({ ok: false, error: 'Please fill in name, business, city, phone, email, and preferred language.' }, 400);
@@ -443,6 +568,7 @@ export async function onRequestPost(context) {
   params.set(FIELD_MAP.email, email);
   params.set(FIELD_MAP.language, language);
   params.set(FIELD_MAP.message, message);
+  if (interest) params.set(FIELD_MAP.interest, interest);
   for (const sentinel of SENTINEL_FIELDS) params.set(sentinel, '');
   params.set('fvv', fvv);
   if (partialResponse) params.set('partialResponse', partialResponse);
@@ -495,8 +621,15 @@ export async function onRequestPost(context) {
   // safely recorded in the Sheet at this point regardless of what happens
   // to the email.
   context.waitUntil(
-    sendConfirmationEmail(context.env, { business, city, phone, email, language, message }).catch((err) => {
+    sendConfirmationEmail(context.env, { business, city, phone, email, language, interest, message }).catch((err) => {
       console.error('Failed to send confirmation email:', err);
+    })
+  );
+
+  // Copy of the inquiry for the sales team, also in the background.
+  context.waitUntil(
+    sendInquiryNotification(context.env, { name, business, city, phone, email, language, interest, message }).catch((err) => {
+      console.error('Failed to send inquiry notification:', err);
     })
   );
 
