@@ -571,6 +571,20 @@ section.stats-dark .section-sub { color: var(--on-ink-dim); }
   .contact-wrap { gap: 20px; }
 }
 
+/* About page "Our Story" / "What We Do": two equal columns, centered. */
+.about-story .contact-wrap {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 1000px;
+  margin: 0 auto;
+  text-align: center;
+}
+@media (max-width: 780px) and (hover: none) and (pointer: coarse) {
+  .about-story .contact-wrap { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .about-story .contact-wrap { grid-template-columns: 1fr; }
+}
+
 /* Homepage "About Us" teaser: a compact band rather than a full section. */
 section.about-teaser { padding: 34px 0; }
 .about-teaser .section-title { margin-top: 0; }
