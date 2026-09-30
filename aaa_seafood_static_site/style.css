@@ -577,22 +577,22 @@ section.about-teaser { padding: 34px 0; }
 
 /* Inner pages (About, Products, Wholesale, Delivery, Contact): the page
    title sits close to the menu, with a short gap before what follows. */
-header.site-header + section:not(.not-found) { padding-top: 26px; }
+header.site-header + section:not(.not-found) { padding-top: 14px; }
 header.site-header + section:not(.not-found) h1.section-title { margin-top: 0; }
 header.site-header + section:not(.not-found) .section-sub { margin-bottom: 22px; }
 @media (max-width: 700px) and (hover: none) and (pointer: coarse) {
-  header.site-header + section:not(.not-found) { padding-top: 20px; }
+  header.site-header + section:not(.not-found) { padding-top: 12px; }
   header.site-header + section:not(.not-found) .section-sub { margin-bottom: 16px; }
 }
 
 /* Title bands (About, Products, Wholesale): just the title and one line,
    with even space above and below. */
-header.site-header + section.page-intro { padding: 24px 0 26px; }
+header.site-header + section.page-intro { padding: 12px 0 24px; }
 .page-intro .section-title { margin-bottom: 6px; }
 header.site-header + section.page-intro .section-sub { margin-bottom: 0; }
 .page-intro .pallet-note { margin-top: 14px; }
 @media (max-width: 700px) and (hover: none) and (pointer: coarse) {
-  header.site-header + section.page-intro { padding: 18px 0 20px; }
+  header.site-header + section.page-intro { padding: 10px 0 18px; }
   .page-intro .pallet-note { margin-top: 12px; }
 }
 
