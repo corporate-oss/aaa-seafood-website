@@ -48,7 +48,7 @@ const FIELD_MAP = {
 };
 
 // Choices offered on the site's "Interested In" dropdown.
-const INTEREST_OPTIONS = ['Frozen products', 'Fresh products', 'Pallet orders', 'Other'];
+const INTEREST_OPTIONS = ['Frozen products', 'Fresh products', 'Wholesale', 'Pallet orders', 'Other'];
 
 // The "Preferred Contact Language" question renders as a native dropdown,
 // and Google Forms pairs every dropdown/multiple-choice question with a
