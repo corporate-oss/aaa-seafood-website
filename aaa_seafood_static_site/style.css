@@ -1130,44 +1130,33 @@ footer.site-footer .fine-print {
   .pallet-ctas .btn { flex: 1 1 auto; text-align: center; }
 }
 
-/* Wholesale page: the nine frozen products, three across (two on
-   narrow screens, with the odd one out centered on the last row). */
-section.frozen-section { padding-top: 30px; }
-.frozen-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 22px;
-  max-width: 840px;
-  margin: 0 auto;
-}
-.frozen-grid .product-card { flex: 0 0 calc((100% - 44px) / 3); min-width: 0; }
-
-.other-products {
+/* Wholesale page: one centered pitch for larger orders, built from the
+   pallet band's pieces (icon, eyebrow, heading, button). */
+section.volume-section { padding: 34px 0 40px; }
+.pallet-wrap p.volume-copy {
   max-width: 640px;
-  margin: 32px auto 0;
-  padding: 18px 22px;
-  background: var(--bg-alt);
-  border: 1px solid var(--border);
-  border-radius: 2px;
-  text-align: center;
+  font-size: 1.02rem;
+  line-height: 1.65;
+  text-wrap: pretty;
 }
-.other-products p {
-  margin: 0 0 14px;
-  color: var(--muted);
-  line-height: 1.55;
-  text-wrap: balance;
+.pallet-wrap p.volume-note {
+  max-width: 560px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+  font-size: 0.92rem;
 }
-.other-products strong { display: block; margin-bottom: 2px; color: var(--ink); }
-
-@media (max-width: 719px) {
-  .frozen-grid { gap: 14px; }
-  .frozen-grid .product-card { flex-basis: calc((100% - 14px) / 2); }
-  .frozen-grid .product-card .label { font-size: 0.85rem; padding: 10px 12px; }
+.volume-note strong { color: var(--ink); }
+.volume-note a {
+  color: var(--tuna);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
 }
 @media (max-width: 700px) and (hover: none) and (pointer: coarse) {
-  section.frozen-section { padding-top: 24px; }
-  .other-products { margin-top: 24px; padding: 16px 16px; }
+  section.volume-section { padding: 26px 0 30px; }
+  .pallet-wrap p.volume-copy { font-size: 0.96rem; }
 }
 
 /* Products page: four across (two on narrow screens) so each category's
