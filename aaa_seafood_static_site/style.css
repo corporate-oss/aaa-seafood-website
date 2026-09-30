@@ -1354,9 +1354,29 @@ section.prod-page { padding-top: 34px; }
 .prod-intro { max-width: 680px; margin: 0 auto 36px; text-align: center; color: var(--muted); line-height: 1.65; font-size: 1.05rem; }
 .prod-grid--four { display: flex; flex-wrap: wrap; justify-content: center; gap: 22px; }
 .prod-grid--four .product-card { flex: 0 0 calc((100% - 66px) / 4); min-width: 0; }
-.prod-also { margin-top: 32px; text-align: center; color: var(--muted); }
-.prod-also p { margin: 0; }
-.prod-also a, .prod-related a { color: var(--green); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+/* Back to Products: a button at the top of each product page, plus a
+   floating copy that appears once the top one has scrolled away (e.g. after
+   jumping straight to a fish from the Products page). */
+.page-intro .back-btn { margin-bottom: 12px; }
+.back-btn, .back-float {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-weight: 600; font-size: 0.92rem; line-height: 1; text-decoration: none;
+  min-height: 44px; padding: 0 16px; border-radius: 2px;
+}
+.back-btn { color: var(--green); background: var(--bg); border: 1.5px solid var(--green); }
+.back-btn:hover { background: var(--green); color: var(--on-ink); }
+.back-float {
+  position: fixed; left: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 60;
+  color: var(--on-ink); background: var(--green); border: 1.5px solid var(--green-dark);
+  box-shadow: 0 8px 22px rgba(18,24,26,0.28);
+  opacity: 0; visibility: hidden; transform: translateY(10px);
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.2s;
+}
+.back-float.show { opacity: 1; visibility: visible; transform: none; transition: opacity 0.2s ease, transform 0.2s ease; }
+.back-float:hover { background: var(--green-dark); }
+.back-btn:focus-visible, .back-float:focus-visible { outline: 2px solid var(--tuna); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .back-float, .back-float.show { transition: none; transform: none; } }
+.prod-related a { color: var(--green); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
 .prod-related { display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 8px 18px; margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--border); font-size: 0.95rem; }
 .prod-related span { color: var(--muted); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; }
 @media (max-width: 900px) {

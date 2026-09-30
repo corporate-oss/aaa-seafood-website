@@ -56,12 +56,18 @@ document.addEventListener('DOMContentLoaded', function () {
       btn.setAttribute('aria-label', (open ? 'Show fewer ' : 'Show more ') + noun);
     }
 
-    setOpen(false);
+    // Remember an opened list for this visit, so coming back from a product
+    // page shows the list the way the visitor left it.
+    var key = 'aaa-open-' + (block.id || '');
+    var remembered = false;
+    try { remembered = sessionStorage.getItem(key) === '1'; } catch (e) {}
+    setOpen(remembered);
     wrap.hidden = false;
 
     btn.addEventListener('click', function () {
       var opening = block.classList.contains('is-collapsed');
       setOpen(opening);
+      try { if (opening) sessionStorage.setItem(key, '1'); else sessionStorage.removeItem(key); } catch (e) {}
       // After closing a long list, bring the category back into view if
       // the collapse left it above the top of the screen.
       if (!opening && block.getBoundingClientRect().top < 0) {
@@ -209,4 +215,40 @@ document.addEventListener('DOMContentLoaded', function () {
         if (submitBtn) submitBtn.disabled = false;
       });
   });
+});
+
+// Product pages: "Back to Products" buttons. When the visitor came from the
+// Products page (or Home), going back returns them to the same spot they
+// left; otherwise the button simply opens the Products page.
+document.addEventListener('DOMContentLoaded', function () {
+  var backs = document.querySelectorAll('[data-back]');
+  if (!backs.length) return;
+  var ref = null;
+  try {
+    if (document.referrer) {
+      var u = new URL(document.referrer);
+      if (u.origin === location.origin && (u.pathname === '/products' || u.pathname === '/products.html' || u.pathname === '/' || u.pathname === '/index.html')) ref = u;
+    }
+  } catch (e) { ref = null; }
+  var fromHome = ref && (ref.pathname === '/' || ref.pathname === '/index.html');
+  Array.prototype.forEach.call(backs, function (a) {
+    if (fromHome) {
+      a.setAttribute('href', '/');
+      var label = a.querySelector('.back-label');
+      if (label) label.textContent = 'Back to Home';
+    }
+    a.addEventListener('click', function (event) {
+      if (ref && window.history.length > 1) { event.preventDefault(); window.history.back(); }
+    });
+  });
+
+  var floatBtn = document.querySelector('.back-float');
+  var topBtn = document.querySelector('.back-btn');
+  var cta = document.querySelector('.cta-strip');
+  if (!floatBtn || !topBtn || !('IntersectionObserver' in window)) return;
+  var topVisible = true, ctaVisible = false;
+  function update() { floatBtn.classList.toggle('show', !topVisible && !ctaVisible); }
+  new IntersectionObserver(function (entries) { topVisible = entries[0].isIntersecting; update(); },
+    { rootMargin: '-90px 0px 0px 0px' }).observe(topBtn);
+  if (cta) new IntersectionObserver(function (entries) { ctaVisible = entries[0].isIntersecting; update(); }).observe(cta);
 });
