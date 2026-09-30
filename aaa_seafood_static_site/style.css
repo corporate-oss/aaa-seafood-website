@@ -950,16 +950,14 @@ header.site-header + section.page-intro .section-sub { margin-bottom: 0; }
    gets narrow, in any window. */
 .form-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  align-items: end; /* if a label ever wraps, the boxes still line up */
   column-gap: 20px;
   row-gap: 0; /* each .field already carries 20px below it, so stacked fields stay evenly spaced */
 }
 @media (max-width: 480px) and (hover: none) and (pointer: coarse) {
   .form-row { grid-template-columns: 1fr; }
 }
-/* Keeps a lone field (Interested In) in the left column; disappears when
-   the row stacks to one column. */
-.form-row .field-spacer { margin: 0; min-height: 0; }
 .field select:invalid { color: var(--muted); }
 .field select option { color: var(--ink); }
 .form-note {
