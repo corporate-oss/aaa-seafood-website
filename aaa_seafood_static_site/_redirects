@@ -1,0 +1,7 @@
+# Old Wix addresses -> pages on this site (permanent), so bookmarks and
+# search results from the previous site still land somewhere useful.
+/home                  /           301
+/general-9             /about      301
+/deliveryinformation   /delivery   301
+/contactus             /contact    301
+/product-page/*        /products   301

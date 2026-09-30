@@ -19,3 +19,10 @@
 # cached copy while quietly re-checking for up to a week after that).
 /images/*
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+# The site lives at www.aaainternationalseafood.com. Keep search engines
+# from indexing the Cloudflare preview addresses as a duplicate copy.
+https://aaa-international-seafood.pages.dev/*
+  X-Robots-Tag: noindex
+https://:version.aaa-international-seafood.pages.dev/*
+  X-Robots-Tag: noindex
