@@ -576,11 +576,24 @@ section.about-teaser { padding: 34px 0; }
 }
 
 /* Inner pages (About, Products, Wholesale, Delivery, Contact): the page
-   title sits closer to the menu. */
-header.site-header + section:not(.not-found) { padding-top: 36px; }
+   title sits close to the menu, with a short gap before what follows. */
+header.site-header + section:not(.not-found) { padding-top: 26px; }
 header.site-header + section:not(.not-found) h1.section-title { margin-top: 0; }
+header.site-header + section:not(.not-found) .section-sub { margin-bottom: 22px; }
 @media (max-width: 700px) and (hover: none) and (pointer: coarse) {
-  header.site-header + section:not(.not-found) { padding-top: 22px; }
+  header.site-header + section:not(.not-found) { padding-top: 20px; }
+  header.site-header + section:not(.not-found) .section-sub { margin-bottom: 16px; }
+}
+
+/* Title bands (About, Products, Wholesale): just the title and one line,
+   with even space above and below. */
+header.site-header + section.page-intro { padding: 24px 0 26px; }
+.page-intro .section-title { margin-bottom: 6px; }
+header.site-header + section.page-intro .section-sub { margin-bottom: 0; }
+.page-intro .pallet-note { margin-top: 14px; }
+@media (max-width: 700px) and (hover: none) and (pointer: coarse) {
+  header.site-header + section.page-intro { padding: 18px 0 20px; }
+  .page-intro .pallet-note { margin-top: 12px; }
 }
 
 /* Product grid */
@@ -944,6 +957,11 @@ header.site-header + section:not(.not-found) h1.section-title { margin-top: 0; }
 @media (max-width: 480px) and (hover: none) and (pointer: coarse) {
   .form-row { grid-template-columns: 1fr; }
 }
+/* Keeps a lone field (Interested In) in the left column; disappears when
+   the row stacks to one column. */
+.form-row .field-spacer { margin: 0; min-height: 0; }
+.field select:invalid { color: var(--muted); }
+.field select option { color: var(--ink); }
 .form-note {
   font-size: 0.82rem;
   color: var(--muted);
@@ -1116,7 +1134,7 @@ footer.site-footer .fine-print {
 
 /* Wholesale page: the nine frozen products, three across (two on
    narrow screens, with the odd one out centered on the last row). */
-section.frozen-section { padding-top: 36px; }
+section.frozen-section { padding-top: 30px; }
 .frozen-grid {
   display: flex;
   flex-wrap: wrap;
@@ -1177,7 +1195,7 @@ section.frozen-section { padding-top: 36px; }
 
 /* Products catalog: tighter spacing between categories, and no extra
    gap stacked under the last one before the red contact bar. */
-section.catalog { padding-top: 40px; padding-bottom: 44px; }
+section.catalog { padding-top: 30px; padding-bottom: 44px; }
 .catalog .category-block { margin-bottom: 44px; }
 .catalog .category-block:last-child { margin-bottom: 0; }
 @media (max-width: 700px) and (hover: none) and (pointer: coarse) {

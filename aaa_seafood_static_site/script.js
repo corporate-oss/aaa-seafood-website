@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // Products page: each category shows its first few products, with a
-// "Show all" button that opens the rest in place. Without JavaScript the
+// "Show more" button that opens the rest in place. Without JavaScript the
 // buttons stay hidden and every product simply shows.
 document.addEventListener('DOMContentLoaded', function () {
   var VISIBLE = 4;
@@ -50,7 +50,10 @@ document.addEventListener('DOMContentLoaded', function () {
     function setOpen(open) {
       block.classList.toggle('is-collapsed', !open);
       btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-      btn.textContent = open ? 'Show fewer' : 'Show all ' + total + ' ' + noun;
+      btn.textContent = open ? 'Show fewer' : 'Show more';
+      // Screen readers hear which list the button opens (the visible words
+      // stay first so voice control still matches "Show more").
+      btn.setAttribute('aria-label', (open ? 'Show fewer ' : 'Show more ') + noun);
     }
 
     setOpen(false);

@@ -3,10 +3,12 @@
 #
 # Content-Security-Policy: only this site's own scripts may run (no inline
 # or third-party JS), styles/fonts may also come from Google Fonts, the page
-# can only talk to its own server, and no other site may frame it.
+# can only talk to its own server, and no other site may frame it. The one
+# exception is Cloudflare Web Analytics (cookie-free visitor counts): its
+# beacon script and the address it reports to are allowed.
 
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://cloudflareinsights.com; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
