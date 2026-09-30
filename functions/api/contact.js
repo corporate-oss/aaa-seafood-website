@@ -153,8 +153,6 @@ function buildConfirmationEmailHtml({ business, city, phone, language, interest,
   .recap-label { font-family: 'Space Grotesk', -apple-system, sans-serif; font-weight: 600; font-size: 0.66rem; letter-spacing: 0.5px; text-transform: uppercase; color: #8a8578; display: block; margin-bottom: 2px; }
   .recap-value { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 0.92rem; color: #12181a; }
 
-  .next-steps { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 0.92rem; line-height: 1.6; color: #33362f; margin: 0 0 30px; }
-
   .contact-strip { background: #c1392b; padding: 20px 32px; }
   .contact-strip table td { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; color: #ffffff; font-size: 0.86rem; line-height: 1.5; vertical-align: top; }
   .contact-strip .label { display: block; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 0.62rem; letter-spacing: 0.5px; text-transform: uppercase; color: #fbe3dd; margin-bottom: 2px; }
@@ -172,7 +170,7 @@ function buildConfirmationEmailHtml({ business, city, phone, language, interest,
     .brand-name { font-size: 1.05rem !important; }
     .body-pad { padding: 24px 20px 4px !important; }
     h1.title { font-size: 1.22rem !important; }
-    p.lead, .next-steps { font-size: 0.9rem !important; }
+    p.lead { font-size: 0.9rem !important; }
     .recap-head, .recap-row { padding: 10px 14px !important; }
     .recap-value { font-size: 0.88rem !important; }
     .contact-strip { padding: 18px 20px !important; }
@@ -233,11 +231,6 @@ function buildConfirmationEmailHtml({ business, city, phone, language, interest,
             <span class="recap-value">${message ? escapeHtml(message).replace(/\r\n|\r|\n/g, '<br>') : '&mdash;'}</span>
           </div>
         </div>
-
-        <p class="next-steps">
-          If anything above doesn't look right, or if this is urgent, just call us directly
-          at <strong>323-582-8003</strong> and we'll take care of it right away.
-        </p>
       </td></tr>
 
       <tr><td class="contact-strip">
