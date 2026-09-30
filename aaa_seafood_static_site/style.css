@@ -244,6 +244,12 @@ nav.site-nav a.active {
   nav.site-nav a { padding: 10px 4px; }
 }
 
+/* Tablets big enough for the full menu bar (touch, wider than 820px):
+   taller link rows so each one is a comfortable 40px+ tap target. */
+@media (min-width: 821px) and (min-height: 501px) and (hover: none) and (pointer: coarse) {
+  nav.site-nav a { padding-top: 11px; padding-bottom: 11px; }
+}
+
 /* Very short mouse-driven windows: let the header scroll away instead of
    pinning a tall two-row header over a small viewport. */
 @media (max-height: 500px) and (hover: hover) {
