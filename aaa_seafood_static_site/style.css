@@ -1145,6 +1145,7 @@ footer.site-footer .fine-print {
 /* Wholesale page: one centered pitch for larger orders, built from the
    pallet band's pieces (icon, eyebrow, heading, button). */
 section.volume-section { padding: 34px 0 40px; }
+.volume-section .btn { text-wrap: balance; }
 .pallet-wrap p.volume-copy {
   max-width: 640px;
   font-size: 1.02rem;
