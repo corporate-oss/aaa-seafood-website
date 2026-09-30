@@ -256,7 +256,6 @@ nav.site-nav a.active {
   background: #111;
   color: #fff;
   overflow: hidden;
-  min-height: 520px;
 }
 
 /* Still hero image — script.js scales it up as the hero scrolls out of
@@ -285,21 +284,17 @@ nav.site-nav a.active {
 .hero-overlay {
   position: relative;
   z-index: 1;
-  min-height: 520px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 60px 24px;
+  padding: 52px 24px 48px;
 }
 
 @media (max-width: 700px) and (hover: none) and (pointer: coarse) {
-  .hero, .hero-overlay {
-    min-height: 460px;
-  }
   .hero-overlay {
-    padding: 40px 20px;
+    padding: 32px 20px;
   }
 }
 
@@ -330,7 +325,7 @@ nav.site-nav a.active {
 .hero-stats {
   display: flex;
   gap: 22px;
-  margin-top: 30px;
+  margin-top: 24px;
   flex-wrap: wrap;
   justify-content: center;
 }
@@ -455,6 +450,12 @@ nav.site-nav a.active {
   }
 }
 
+/* A page with a single trust item (Wholesale) centres it. */
+.trust-strip .container:has(.trust-item:only-child) {
+  grid-template-columns: minmax(0, max-content);
+  justify-content: center;
+}
+
 /* Layout safety for any narrow window (not touch-gated): the items can't
    sit side by side this narrow, so stack them rather than run off the edge.
    The :has() variant is listed so it doesn't outrank this rule. */
@@ -514,7 +515,7 @@ nav.site-nav a.active {
 }
 
 /* 404 page */
-.not-found { padding: 100px 0; }
+.not-found { padding: 56px 0; }
 .not-found-eyebrow {
   text-align: center;
   font-family: 'Instrument Serif', serif;
@@ -526,7 +527,7 @@ nav.site-nav a.active {
 }
 
 /* Sections */
-section { padding: 60px 0; }
+section { padding: 44px 0; }
 section.alt { background: var(--bg-alt); }
 
 section.stats-dark { background: var(--ink); }
@@ -534,11 +535,12 @@ section.stats-dark .section-title { color: var(--on-ink); }
 section.stats-dark .section-sub { color: var(--on-ink-dim); }
 
 @media (max-width: 700px) and (hover: none) and (pointer: coarse) {
-  section { padding: 32px 0; }
+  section { padding: 28px 0; }
 }
 
 .section-title {
   text-align: center;
+  margin-top: 0;
   margin-bottom: 8px;
   font-size: clamp(1.5rem, 3vw, 2.1rem);
 }
@@ -552,6 +554,25 @@ section.stats-dark .section-sub { color: var(--on-ink-dim); }
 
 @media (max-width: 700px) and (hover: none) and (pointer: coarse) {
   .section-sub { margin-bottom: 22px; }
+}
+
+/* Phones: tighter category headers and stacked columns. */
+@media (max-width: 700px) and (hover: none) and (pointer: coarse) {
+  .category-header { padding-bottom: 10px; margin-bottom: 16px; }
+  .not-found { padding: 36px 0; }
+}
+@media (max-width: 640px) {
+  .contact-wrap { gap: 20px; }
+}
+
+/* Homepage "About Us" teaser: a compact band rather than a full section. */
+section.about-teaser { padding: 34px 0; }
+.about-teaser .section-title { margin-top: 0; }
+.about-teaser .section-sub { margin-bottom: 18px; }
+.about-teaser p:last-child { margin: 0; }
+@media (max-width: 700px) and (hover: none) and (pointer: coarse) {
+  section.about-teaser { padding: 24px 0; }
+  .about-teaser .section-sub { margin-bottom: 14px; }
 }
 
 /* Inner pages (About, Products, Wholesale, Delivery, Contact): the page
@@ -573,6 +594,12 @@ header.site-header + section:not(.not-found) h1.section-title { margin-top: 0; }
    make two even rows instead of four plus two. */
 @media (min-width: 900px) {
   .product-grid--featured { grid-template-columns: repeat(3, 1fr); }
+}
+/* Phones and narrow windows: two across (three even rows) like the
+   Products page, instead of one long single column. */
+@media (max-width: 719px) {
+  .product-grid--featured { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .product-grid--featured .product-card .label { font-size: 0.85rem; padding: 10px 12px; }
 }
 
 .product-card {
@@ -642,8 +669,8 @@ header.site-header + section:not(.not-found) h1.section-title { margin-top: 0; }
   gap: 16px;
   flex-wrap: wrap;
   border-bottom: 1px solid var(--border);
-  padding-bottom: 18px;
-  margin-bottom: 28px;
+  padding-bottom: 14px;
+  margin-bottom: 22px;
 }
 .category-block h2 {
   font-size: 1.55rem;
@@ -679,26 +706,80 @@ header.site-header + section:not(.not-found) h1.section-title { margin-top: 0; }
   }
 }
 
-/* Delivery map */
+/* Delivery map: real county lines, coastline and main freeways, with
+   the delivery areas pinned. */
 .service-map {
-  max-width: 720px;
+  max-width: 900px;
   margin: 0 auto;
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 2px;
-  padding: 14px;
-  overflow-x: auto;
+  padding: 10px;
 }
 
 .service-map svg {
   width: 100%;
-  min-width: 560px;
   height: auto;
   display: block;
 }
 
+.map-sea { fill: #dce6e5; }
+.map-land { fill: #f6f1e7; }
+.map-land-other { fill: #ebe5d5; }
+.map-counties path { fill: none; stroke: #d1c6a7; stroke-width: 1; stroke-dasharray: 4 3; }
+.map-coast { fill: none; stroke: #b3c6c5; stroke-width: 1.3; }
+.map-roads path {
+  fill: none;
+  stroke: #d9b36a;
+  stroke-width: 2.6;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.map-county {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 1.6px;
+  fill: #aea383;
+  text-anchor: middle;
+}
+.map-sea-label {
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-size: 18px;
+  letter-spacing: 1px;
+  fill: #8aa3a2;
+  text-anchor: middle;
+}
+.map-town { fill: #8f8b7c; }
+.map-town-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 500;
+  font-size: 11px;
+  fill: #6c695e;
+  paint-order: stroke;
+  stroke: #f6f1e7;
+  stroke-width: 3px;
+}
+.map-shield rect { stroke-width: 1.2; }
+.map-shield.i rect { fill: #2f5597; stroke: #fff; }
+.map-shield.us rect { fill: #fff; stroke: #333; }
+.map-shield.ca rect { fill: #2e6b3f; stroke: #fff; }
+.map-shield text {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 10px;
+  text-anchor: middle;
+  dominant-baseline: central;
+  fill: #fff;
+}
+.map-shield.us text { fill: #222; }
+
+.map-pin circle { fill: var(--green); stroke: #f6f1e7; stroke-width: 2.5; }
+.map-pin.hq circle { fill: var(--tuna); }
 .map-pin text {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   font-family: 'Space Grotesk', sans-serif;
   fill: var(--ink);
@@ -706,42 +787,29 @@ header.site-header + section:not(.not-found) h1.section-title { margin-top: 0; }
   stroke: #f6f1e7;
   stroke-width: 4px;
 }
+.map-pin.hq text.hq-label { fill: var(--tuna); font-size: 14px; }
 
-.map-pin.hq text.hq-label {
-  fill: var(--tuna);
-  font-size: 12px;
-}
-
-.map-caption {
-  max-width: 720px;
-  margin: 18px auto 0;
-  text-align: center;
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
-/* Narrow windows: the map shrinks to fit instead of scrolling sideways, and
-   numbered markers plus a legend replace the text labels (which would be
-   too small to read at that scale). */
+/* Narrow windows: the map shrinks to fit, and numbered markers plus a
+   legend replace the text labels (which would be too small to read). */
 .map-num,
 .map-legend { display: none; }
 
-.map-num circle { fill: var(--green); stroke: #f6f1e7; stroke-width: 3; }
+.map-num circle { fill: var(--green); stroke: #f6f1e7; stroke-width: 4; }
 .map-num .hq circle { fill: var(--tuna); }
 .map-num text {
   font-family: 'Space Grotesk', sans-serif;
   font-weight: 700;
-  font-size: 22px;
+  font-size: 27px;
   fill: #fff;
   text-anchor: middle;
   dominant-baseline: central;
 }
-.map-num .hq text { font-size: 17px; }
+.map-num .hq text { font-size: 21px; }
 
 .map-legend {
   list-style: none;
-  max-width: 720px;
-  margin: 18px auto 0;
+  max-width: 900px;
+  margin: 16px auto 0;
   padding: 0;
   gap: 10px 20px;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
@@ -769,13 +837,11 @@ header.site-header + section:not(.not-found) h1.section-title { margin-top: 0; }
 .map-legend .hq .map-legend-num { background: var(--tuna); font-size: 0.62rem; }
 
 @media (max-width: 640px) {
-  .service-map { overflow: visible; padding: 6px; }
-  .service-map svg { min-width: 0; }
+  .service-map { padding: 4px; }
   .map-pin text,
-  .service-map svg > text { display: none; }
+  .map-detail { display: none; }
   .map-num { display: inline; }
   .map-legend { display: grid; }
-  .map-caption { display: none; }
 }
 
 /* Contact */
@@ -787,6 +853,9 @@ header.site-header + section:not(.not-found) h1.section-title { margin-top: 0; }
 }
 
 .contact-wrap > * { min-width: 0; }
+/* About page text columns: no trailing paragraph margin, so stacked
+   columns sit one even gap apart on phones. */
+.contact-wrap > div > p:last-child { margin-bottom: 0; }
 
 @media (max-width: 780px) and (hover: none) and (pointer: coarse) {
   .contact-wrap { grid-template-columns: 1fr; }
@@ -802,22 +871,23 @@ header.site-header + section:not(.not-found) h1.section-title { margin-top: 0; }
   background: var(--bg-alt);
   border: 1px solid var(--border);
   border-radius: 2px;
-  padding: 28px;
+  padding: 18px 22px 8px;
 }
 
 .contact-card h3 {
-  margin-top: 0;
+  margin: 0 0 6px;
   font-style: italic;
   color: var(--tuna);
 }
 
 .contact-line {
-  margin: 14px 0;
-  font-size: 1rem;
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+  line-height: 1.4;
   overflow-wrap: anywhere;
 }
 
-.contact-line strong { display: block; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 3px; }
+.contact-line strong { display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 1px; }
 
 .form-embed {
   background: #fff;
@@ -868,7 +938,8 @@ header.site-header + section:not(.not-found) h1.section-title { margin-top: 0; }
 .form-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
-  gap: 20px;
+  column-gap: 20px;
+  row-gap: 0; /* each .field already carries 20px below it, so stacked fields stay evenly spaced */
 }
 @media (max-width: 480px) and (hover: none) and (pointer: coarse) {
   .form-row { grid-template-columns: 1fr; }
@@ -973,7 +1044,7 @@ footer.site-footer .fine-print {
   width: 64px;
   height: 48px;
   color: var(--green);
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .pallet-eyebrow {
@@ -982,11 +1053,11 @@ footer.site-footer .fine-print {
   letter-spacing: 1.2px;
   text-transform: uppercase;
   color: var(--tuna);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .pallet-wrap h2 {
-  margin: 0 0 12px;
+  margin: 0 0 10px;
   font-size: clamp(1.5rem, 3vw, 2.1rem);
   text-wrap: balance;
 }
@@ -994,7 +1065,7 @@ footer.site-footer .fine-print {
 .pallet-wrap p {
   margin: 0;
   color: var(--muted);
-  line-height: 1.65;
+  line-height: 1.55;
   max-width: 520px;
   text-wrap: balance;
 }
@@ -1004,7 +1075,7 @@ footer.site-footer .fine-print {
   flex-wrap: wrap;
   justify-content: center;
   gap: 12px;
-  margin-top: 24px;
+  margin-top: 18px;
 }
 
 /* Outline button for light backgrounds */
@@ -1043,32 +1114,44 @@ footer.site-footer .fine-print {
   .pallet-ctas .btn { flex: 1 1 auto; text-align: center; }
 }
 
-/* Wholesale page: product-line cards (three across, one column when narrow) */
-.line-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+/* Wholesale page: the nine frozen products, three across (two on
+   narrow screens, with the odd one out centered on the last row). */
+section.frozen-section { padding-top: 36px; }
+.frozen-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 22px;
-  max-width: 960px;
+  max-width: 840px;
   margin: 0 auto;
 }
+.frozen-grid .product-card { flex: 0 0 calc((100% - 44px) / 3); min-width: 0; }
 
-.line-card { display: block; }
-.line-card .thumb { aspect-ratio: 4 / 3; }
-.line-card .label { font-size: 1rem; }
-.line-card .label span {
-  display: block;
-  margin-top: 3px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--muted);
+.other-products {
+  max-width: 640px;
+  margin: 32px auto 0;
+  padding: 18px 22px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  text-align: center;
 }
+.other-products p {
+  margin: 0 0 14px;
+  color: var(--muted);
+  line-height: 1.55;
+  text-wrap: balance;
+}
+.other-products strong { display: block; margin-bottom: 2px; color: var(--ink); }
 
-/* Phones: shorter photos so the three lines don't make a long scroll. */
-@media (max-width: 560px) {
-  .line-grid { gap: 14px; }
-  .line-card .thumb { aspect-ratio: 16 / 9; }
+@media (max-width: 719px) {
+  .frozen-grid { gap: 14px; }
+  .frozen-grid .product-card { flex-basis: calc((100% - 14px) / 2); }
+  .frozen-grid .product-card .label { font-size: 0.85rem; padding: 10px 12px; }
+}
+@media (max-width: 700px) and (hover: none) and (pointer: coarse) {
+  section.frozen-section { padding-top: 24px; }
+  .other-products { margin-top: 24px; padding: 16px 16px; }
 }
 
 /* Products page: four across (two on narrow screens) so each category's
