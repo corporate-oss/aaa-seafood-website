@@ -97,7 +97,7 @@ header.site-header.scrolled {
   display: block;
   font-family: 'Space Grotesk', sans-serif;
   font-weight: 600;
-  font-size: 0.68rem;
+  font-size: 0.6875rem;
   color: var(--muted);
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -235,7 +235,11 @@ nav.site-nav a.active {
   nav.site-nav .nav-long { display: inline; }
   .brand img { height: 34px; }
   .brand-text { font-size: 0.82rem; line-height: 1.1; }
-  .brand-text span { font-size: 0.6rem; letter-spacing: 0.4px; }
+  .brand-text span { font-size: 0.6875rem; letter-spacing: 0.4px; }
+}
+/* The narrowest phones (under 360px) keep the smaller tagline so it clears the menu button. */
+@media (max-width: 359px) {
+  .brand-text span { font-size: 0.6rem; }
 }
 
 /* Phones held sideways: tighter menu rows so all six links fit. */
@@ -376,7 +380,7 @@ nav.site-nav a.active {
   display: block;
   font-family: 'Space Grotesk', sans-serif;
   font-weight: 600;
-  font-size: 0.66rem;
+  font-size: 0.6875rem;
   letter-spacing: 0.5px;
   text-transform: uppercase;
   margin-top: 4px;
@@ -390,7 +394,7 @@ nav.site-nav a.active {
   .hero-stats { gap: 14px; }
   .hero-stats > div { width: 92px; height: 92px; }
   .hero-stats .stat-num { font-size: 1.4rem; }
-  .hero-stats .stat-label { font-size: 0.64rem; max-width: 80px; }
+  .hero-stats .stat-label { font-size: 0.6875rem; max-width: 80px; }
 }
 
 .btn {
@@ -867,7 +871,7 @@ a.product-card:hover .thumb img {
   font-weight: 700;
   font-size: 0.78rem;
 }
-.map-legend .hq .map-legend-num { background: var(--tuna); font-size: 0.62rem; }
+.map-legend .hq .map-legend-num { background: var(--tuna); font-size: 0.6875rem; }
 
 @media (max-width: 640px) {
   .service-map { padding: 4px; }
@@ -1366,7 +1370,8 @@ section.prod-page { padding-top: 34px; }
   .prod-intro { margin-bottom: 28px; font-size: 1rem; }
   .prod-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
   .prod-grid .product-card { flex: 0 0 calc((100% - 14px) / 2); min-width: 0; }
-  .prod-how { grid-template-columns: 1fr; gap: 18px; margin-top: 36px; }
+  .prod-how { grid-template-columns: 1fr; gap: 18px; margin-top: 28px; padding-top: 22px; }
+  .prod-related { margin-top: 28px; padding-top: 18px; }
 }
 @media (max-width: 480px) {
   .prod-facts li { grid-template-columns: 1fr; gap: 2px; }
