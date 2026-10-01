@@ -1476,3 +1476,23 @@ a.link-more:hover { border-bottom-color: currentColor; }
 a.link-more:hover::after { transform: translateX(3px); }
 .values-more a.link-more { margin: 0 auto; }
 @media (prefers-reduced-motion: reduce) { a.link-more, a.link-more::after { transition: none; } }
+/* Product info blocks for each item in a list (each fresh fish, each frozen
+   product): the same photo + description + facts layout as the main block,
+   boxed and a little smaller, and linkable from the Products page. */
+.prod-feature--item {
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 28px; align-items: center;
+  padding: 20px; margin-bottom: 20px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 2px;
+  scroll-margin-top: 110px;
+}
+.prod-feature--item .prod-copy h2 { font-size: clamp(1.35rem, 2.4vw, 1.6rem); margin-bottom: 8px; }
+.prod-feature--item .prod-copy p { margin-bottom: 14px; }
+.prod-feature--item .prod-facts li { padding: 8px 0; font-size: 0.92rem; }
+.prod-feature--item:target { border-color: var(--tuna); box-shadow: 0 0 0 2px var(--tuna); }
+.prod-feature--item + .category-header, .prod-feature--item + .prod-points, .prod-feature--item + .prod-faq { margin-top: 40px; }
+/* "For Chefs" points: centered under the heading */
+.prod-points--center { text-align: center; }
+@media (max-width: 760px) {
+  .prod-feature--item { grid-template-columns: 1fr; gap: 14px; padding: 14px; }
+  .prod-feature--item .prod-photo img { aspect-ratio: 4 / 3; }
+}
