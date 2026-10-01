@@ -595,14 +595,20 @@ section.stats-dark .section-sub { color: var(--on-ink-dim); margin-bottom: 18px;
   .contact-wrap { gap: 20px; }
 }
 
-/* About page "Our Story" / "What We Do": two equal columns, centered. */
+/* About page "Our Story" / "What We Do": two equal columns, centered text,
+   the same height side by side. Headings line up at the top and each
+   column's last paragraph sits on the same bottom line; any one-line
+   difference in text length goes into the gap between paragraphs. */
 .about-story .contact-wrap {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   max-width: 1000px;
   margin: 0 auto;
   text-align: center;
-  align-items: center;
+  align-items: stretch;
 }
+.about-story .contact-wrap > div { display: flex; flex-direction: column; }
+.about-story .contact-wrap > div > p { margin: 0 0 16px; }
+.about-story .contact-wrap > div > p:last-child { margin-top: auto; margin-bottom: 0; }
 @media (max-width: 780px) and (hover: none) and (pointer: coarse) {
   .about-story .contact-wrap { grid-template-columns: 1fr; }
 }
