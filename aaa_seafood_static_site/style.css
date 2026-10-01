@@ -169,10 +169,11 @@ nav.site-nav a.active {
   cursor: pointer;
 }
 
-/* Touch-only phones and small tablets get the hamburger menu. The second
+/* Phones, small tablets and narrow desktop windows get the hamburger menu
+   (the seven-link bar no longer fits on one row below ~820px). The second
    query covers phones held sideways (wide but short), where the desktop
    nav would otherwise eat a big slice of the screen. */
-@media (max-width: 820px) and (hover: none) and (pointer: coarse),
+@media (max-width: 820px),
        (max-height: 500px) and (hover: none) and (pointer: coarse) {
   /* Grid keeps the logo/toggle locked to one row (the business name wraps
      under the logo if space is tight) while the nav gets its own full
@@ -1418,9 +1419,46 @@ section.prod-page { padding-top: 34px; }
 .prod-points p, .prod-faq p { margin: 0; color: var(--muted); line-height: 1.6; font-size: 0.95rem; }
 .prod-faq { max-width: 760px; margin: 48px auto 0; }
 .prod-faq h2 { text-align: center; font-size: 1.55rem; font-style: italic; margin: 0 0 14px; }
-.prod-faq-item { padding: 16px 0; border-top: 1px solid var(--border); }
+.prod-faq-item { border-top: 1px solid var(--border); }
+/* Each question opens and closes on its own, so the list stays short. */
+.prod-faq-item summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 48px; padding: 10px 0; cursor: pointer; list-style: none; }
+.prod-faq-item summary::-webkit-details-marker { display: none; }
+.prod-faq-item summary h3 { margin: 0; }
+.prod-faq-item summary::after { content: "+"; flex-shrink: 0; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; border: 1.5px solid var(--green); border-radius: 50%; color: var(--green); font-size: 1.1rem; line-height: 1; }
+.prod-faq-item[open] summary::after { content: "\2212"; background: var(--green); color: var(--on-ink); }
+.prod-faq-item summary:hover h3 { color: var(--tuna); }
+.prod-faq-item summary:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+.prod-faq-item p { padding: 0 44px 16px 0; }
 .prod-faq-item:last-child { border-bottom: 1px solid var(--border); }
 @media (max-width: 760px) {
   .prod-points { grid-template-columns: 1fr; gap: 18px; margin-bottom: 36px; }
   .prod-faq { margin-top: 36px; }
+}
+.prod-points a, .prod-faq a { color: var(--tuna); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+/* For Restaurants page: six points in three columns, then the ordering steps */
+.prod-points--three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.prod-steps { margin-top: 36px; }
+@media (max-width: 900px) {
+  .prod-points--three { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .prod-points--three { grid-template-columns: 1fr; }
+}
+/* About page: what sets us apart */
+section.about-values { padding: 36px 0; }
+.about-values .section-title { margin-bottom: 20px; }
+.values-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px 36px; max-width: 1000px; margin: 0 auto; text-align: center; }
+.values-grid h3 { margin: 0 0 6px; font-size: 1.15rem; color: var(--green); }
+.values-grid p { margin: 0; color: var(--muted); line-height: 1.6; font-size: 0.95rem; }
+.values-more { text-align: center; margin: 22px 0 0; font-size: 0.95rem; }
+.values-more a { color: var(--tuna); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 760px) {
+  .values-grid { grid-template-columns: 1fr; gap: 16px; }
+  section.about-values { padding: 28px 0; }
+}
+/* Common questions sit right above Delivery / Volume / Pricing: the last
+   question's rule already divides them, so skip the second line and gap. */
+.prod-faq + .prod-how { margin-top: 32px; padding-top: 0; border-top: 0; }
+@media (max-width: 760px) {
+  .prod-faq + .prod-how { margin-top: 22px; }
 }
