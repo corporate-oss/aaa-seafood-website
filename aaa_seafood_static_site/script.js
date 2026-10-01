@@ -6,6 +6,13 @@ document.addEventListener('DOMContentLoaded', function () {
     return;
   }
 
+  // A link straight to an item (e.g. /bluefin-tuna#bluefin-loin) lands on a
+  // section that must already be in place: sliding it in would leave the
+  // item under the sticky header.
+  var landing = null;
+  try { landing = window.location.hash ? document.querySelector(window.location.hash) : null; } catch (e) {}
+  targets = Array.prototype.filter.call(targets, function (el) { return !(landing && el.contains(landing)); });
+
   targets.forEach(function (el) { el.classList.add('reveal'); });
 
   var observer = new IntersectionObserver(function (entries) {
@@ -251,4 +258,20 @@ document.addEventListener('DOMContentLoaded', function () {
   new IntersectionObserver(function (entries) { topVisible = entries[0].isIntersecting; update(); },
     { rootMargin: '-90px 0px 0px 0px' }).observe(topBtn);
   if (cta) new IntersectionObserver(function (entries) { ctaVisible = entries[0].isIntersecting; update(); }).observe(cta);
+});
+
+// Contact page: a product card with no page of its own (e.g. Frozen
+// Hamachi) links here as /contact?product=<slug>; start the message for the
+// visitor so the click lands somewhere useful. Only known products are used.
+document.addEventListener('DOMContentLoaded', function () {
+  var msg = document.getElementById('cf-message');
+  if (!msg || msg.value) return;
+  var names = { 'frozen-hamachi': 'Frozen Hamachi', 'tuna-cube': 'Tuna Cube', 'escolar-saku': 'Escolar Saku' };
+  var slug = null;
+  try { slug = new URLSearchParams(window.location.search).get('product'); } catch (e) {}
+  var name = slug && Object.prototype.hasOwnProperty.call(names, slug) ? names[slug] : null;
+  if (!name) return;
+  msg.value = 'I’d like pricing on ' + name + '.';
+  var interest = document.getElementById('cf-interest');
+  if (interest && !interest.value) interest.value = 'Frozen products';
 });
