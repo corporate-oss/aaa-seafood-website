@@ -446,7 +446,7 @@ nav.site-nav a.active {
 .trust-strip {
   background: var(--green-dark);
   color: #eef2ea;
-  padding: 26px 0;
+  padding: 16px 0;
 }
 
 .trust-strip .container {
@@ -464,7 +464,7 @@ nav.site-nav a.active {
 }
 
 @media (max-width: 700px) and (hover: none) and (pointer: coarse) {
-  .trust-strip { padding: 16px 0; }
+  .trust-strip { padding: 12px 0; }
   .trust-strip .container,
   .trust-strip .container:has(.trust-item:nth-child(2):last-child) {
     grid-template-columns: 1fr;
@@ -495,8 +495,8 @@ nav.site-nav a.active {
 }
 
 .trust-item .mark {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   border: 1.5px solid rgba(255,255,255,0.5);
   display: flex;
@@ -552,12 +552,20 @@ nav.site-nav a.active {
 section { padding: 44px 0; }
 section.alt { background: var(--bg-alt); }
 
-section.stats-dark { background: var(--ink); }
+section.stats-dark { background: var(--ink); padding: 30px 0; }
 section.stats-dark .section-title { color: var(--on-ink); }
-section.stats-dark .section-sub { color: var(--on-ink-dim); }
+section.stats-dark .section-sub { color: var(--on-ink-dim); margin-bottom: 18px; }
+/* "By the Numbers" (About): tighter than the hero version of these circles. */
+.stats-dark .hero-stats { margin-top: 0; gap: 18px; }
+.stats-dark .hero-stats > div { width: 104px; height: 104px; }
+.stats-dark .hero-stats .stat-num { font-size: 1.65rem; }
 
 @media (max-width: 700px) and (hover: none) and (pointer: coarse) {
   section { padding: 28px 0; }
+  section.stats-dark { padding: 22px 0; }
+  section.stats-dark .section-sub { margin-bottom: 14px; }
+  .stats-dark .hero-stats > div { width: 92px; height: 92px; }
+  .stats-dark .hero-stats .stat-num { font-size: 1.4rem; }
 }
 
 .section-title {
@@ -593,6 +601,7 @@ section.stats-dark .section-sub { color: var(--on-ink-dim); }
   max-width: 1000px;
   margin: 0 auto;
   text-align: center;
+  align-items: center;
 }
 @media (max-width: 780px) and (hover: none) and (pointer: coarse) {
   .about-story .contact-wrap { grid-template-columns: 1fr; }
