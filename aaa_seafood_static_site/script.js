@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function () {
       })
       .then(function (result) {
         if (result.data && result.data.ok) {
-          note.textContent = "Thanks — your message is on its way. We'll be in touch shortly.";
+          note.textContent = "Thanks — your message is on its way. We'll reach out within 24 business hours.";
           note.classList.add('success');
           form.reset();
         } else {
@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function () {
 document.addEventListener('DOMContentLoaded', function () {
   var msg = document.getElementById('cf-message');
   if (!msg || msg.value) return;
-  var names = { 'frozen-hamachi': 'Frozen Hamachi', 'tuna-cube': 'Tuna Cube', 'escolar-saku': 'Escolar Saku' };
+  var names = { 'frozen-hamachi': 'Frozen Hamachi (Yellowtail)', 'tuna-cube': 'Tuna Cube', 'escolar-saku': 'Escolar Saku' };
   var slug = null;
   try { slug = new URLSearchParams(window.location.search).get('product'); } catch (e) {}
   var name = slug && Object.prototype.hasOwnProperty.call(names, slug) ? names[slug] : null;

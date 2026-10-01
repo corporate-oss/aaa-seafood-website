@@ -1462,3 +1462,17 @@ section.about-values { padding: 36px 0; }
 @media (max-width: 760px) {
   .prod-faq + .prod-how { margin-top: 22px; }
 }
+/* "See delivery areas", "Learn more" and similar follow-on links: a quiet
+   arrow link on its own line instead of a heavy underlined phrase. */
+a.link-more {
+  display: table; margin-top: 8px;
+  color: var(--green); font-weight: 600; font-size: 0.9rem;
+  text-decoration: none; max-width: 100%;
+  border-bottom: 1px solid transparent; padding-bottom: 1px;
+  transition: border-color 0.15s ease;
+}
+a.link-more::after { content: "\2192"; display: inline-block; margin-left: 6px; transition: transform 0.15s ease; }
+a.link-more:hover { border-bottom-color: currentColor; }
+a.link-more:hover::after { transform: translateX(3px); }
+.values-more a.link-more { margin: 0 auto; }
+@media (prefers-reduced-motion: reduce) { a.link-more, a.link-more::after { transition: none; } }
