@@ -275,3 +275,31 @@ document.addEventListener('DOMContentLoaded', function () {
   var interest = document.getElementById('cf-interest');
   if (interest && !interest.value) interest.value = 'Frozen products';
 });
+
+// Links straight to an item (/bluefin-tuna#bluefin-loin, /fresh-fish#kinmedai):
+// the browser's own jump to the item can be cut short while the web fonts
+// swap in, so once the page has settled make sure the item is on screen.
+// Skipped as soon as the visitor scrolls or presses a key themselves.
+(function () {
+  var hash = window.location.hash;
+  if (!hash || hash.length < 2) return;
+  var moved = false;
+  ['wheel', 'touchstart', 'keydown'].forEach(function (type) {
+    window.addEventListener(type, function () { moved = true; }, { passive: true, once: true });
+  });
+  function settle() {
+    if (moved) return;
+    var el = null;
+    try { el = document.querySelector(hash); } catch (e) { return; }
+    if (!el) return;
+    var header = document.querySelector('header.site-header');
+    var min = header ? header.getBoundingClientRect().bottom : 0;
+    var top = el.getBoundingClientRect().top;
+    if (top < min - 1 || top > window.innerHeight * 0.6) el.scrollIntoView({ block: 'start', behavior: 'instant' });
+  }
+  window.addEventListener('load', function () {
+    settle();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { setTimeout(settle, 50); });
+    setTimeout(settle, 800);
+  });
+})();
