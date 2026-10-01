@@ -1411,3 +1411,16 @@ section.prod-page { padding-top: 34px; }
 @media (max-width: 480px) {
   .prod-facts li { grid-template-columns: 1fr; gap: 2px; }
 }
+
+/* Product pages: "For Chefs" points and common questions */
+.prod-points { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 40px; margin: 0 0 48px; }
+.prod-points h3, .prod-faq h3 { margin: 0 0 6px; font-size: 1.15rem; color: var(--green); }
+.prod-points p, .prod-faq p { margin: 0; color: var(--muted); line-height: 1.6; font-size: 0.95rem; }
+.prod-faq { max-width: 760px; margin: 48px auto 0; }
+.prod-faq h2 { text-align: center; font-size: 1.55rem; font-style: italic; margin: 0 0 14px; }
+.prod-faq-item { padding: 16px 0; border-top: 1px solid var(--border); }
+.prod-faq-item:last-child { border-bottom: 1px solid var(--border); }
+@media (max-width: 760px) {
+  .prod-points { grid-template-columns: 1fr; gap: 18px; margin-bottom: 36px; }
+  .prod-faq { margin-top: 36px; }
+}
