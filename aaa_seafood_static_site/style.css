@@ -1555,3 +1555,6 @@ section.stats-combined { padding: 22px 0; }
 .about-icon .fillbg { fill: var(--bg); }
 .about-story .about-icon .fillbg { fill: #fbfbf8; }
 @media (max-width: 760px) { .about-icon { width: 48px; height: 36px; margin-bottom: 8px; } }
+
+/* Short origin line under a product name on the Products page */
+.product-card .label .label-sub { display: block; margin-top: 3px; font-weight: 400; font-size: 0.8rem; line-height: 1.35; color: var(--muted); }
