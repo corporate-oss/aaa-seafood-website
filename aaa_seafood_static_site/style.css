@@ -1533,7 +1533,7 @@ section.stats-combined { padding: 22px 0; }
 .stats-cta { max-width: 250px; }
 .stats-cta strong { display: block; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 1.35rem; line-height: 1.2; }
 .stats-cta p { margin: 4px 0 12px; font-size: 0.85rem; color: #cddccb; line-height: 1.45; }
-.stats-cta .btn { padding: 10px 22px; font-size: 0.9rem; }
+.stats-cta .btn { padding: 10px 22px; font-size: 0.9rem; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
 @media (max-width: 1120px) {
   .stats-cta { flex-basis: 100%; max-width: none; padding: 16px 0 0; border-left: 0; border-top: 1px solid rgba(255,255,255,0.18);
     display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 20px; text-align: left; }
@@ -1549,3 +1549,9 @@ section.stats-combined { padding: 22px 0; }
 /* Trust items with a title only: center the title on its icon. */
 .trust-item:not(:has(p)) { align-items: center; }
 .contact-wrap > .contact-side { align-self: stretch; }
+
+/* About: line-art icons (same style as the pallet icon on the home page) */
+.about-icon { display: block; width: 64px; height: 48px; margin: 0 auto 10px; color: var(--green); flex-shrink: 0; }
+.about-icon .fillbg { fill: var(--bg); }
+.about-story .about-icon .fillbg { fill: #fbfbf8; }
+@media (max-width: 760px) { .about-icon { width: 48px; height: 36px; margin-bottom: 8px; } }
