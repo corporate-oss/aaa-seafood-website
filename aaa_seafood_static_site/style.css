@@ -1558,3 +1558,7 @@ section.stats-combined { padding: 22px 0; }
 
 /* Short origin line under a product name on the Products page */
 .product-card .label .label-sub { display: block; margin-top: 3px; font-weight: 400; font-size: 0.8rem; line-height: 1.35; color: var(--muted); }
+
+/* Foodservice "Why ... Choose Us": icon points, links centred under the text */
+.prod-points--icons a.link-more { margin-left: auto; margin-right: auto; }
+.prod-points--icons h3 { margin-top: 0; }
