@@ -20,7 +20,7 @@
 //
 // After a successful hand-off, it also sends two emails via Resend: a
 // branded confirmation to the visitor (buildConfirmationEmailHtml /
-// sendConfirmationEmail) and a copy of the inquiry to the sales team
+// sendConfirmationEmail, blind-copied to CONFIRMATION_COPY_TO) and a copy of the inquiry to the sales team
 // (INQUIRY_NOTIFY_TO, sendInquiryNotification). Both run in the background
 // via context.waitUntil so a slow or failed email never turns an otherwise
 // successful submission into an error for the visitor — their message is
@@ -84,6 +84,9 @@ function json(body, status) {
 const RESEND_API_URL = 'https://api.resend.com/emails';
 const EMAIL_FROM = 'AAA International Seafood <no-reply@aaainternationalseafood.com>';
 const EMAIL_SUBJECT = "We've received your message — AAA International Seafood";
+// Brian gets a blind copy of every confirmation the visitor receives, so he
+// sees exactly what the customer was sent (the visitor doesn't see this address).
+const CONFIRMATION_COPY_TO = 'corporate@aaainternationalseafood.com';
 
 function escapeHtml(str) {
   return String(str)
@@ -283,6 +286,7 @@ async function sendConfirmationEmail(env, { business, city, phone, email, langua
     body: JSON.stringify({
       from: EMAIL_FROM,
       to: email,
+      bcc: [CONFIRMATION_COPY_TO],
       subject: EMAIL_SUBJECT,
       html,
     }),
