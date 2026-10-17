@@ -1562,3 +1562,19 @@ section.stats-combined { padding: 22px 0; }
 /* Foodservice "Why ... Choose Us": icon points, links centred under the text */
 .prod-points--icons a.link-more { margin-left: auto; margin-right: auto; }
 .prod-points--icons h3 { margin-top: 0; }
+
+/* Home: "Wholesale by the Pallet" and "Restaurants & Foodservice" side by
+   side, same pieces, buttons lined up; stacked on phones. */
+.pallet-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; align-items: stretch; }
+.pallet-pair > .pallet-wrap { padding: 4px 32px; }
+.pallet-pair > .pallet-wrap + .pallet-wrap { border-left: 1px solid var(--border); }
+.pallet-pair .pallet-ctas { margin-top: auto; padding-top: 18px; }
+@media (max-width: 760px) {
+  .pallet-pair { grid-template-columns: 1fr; }
+  .pallet-pair > .pallet-wrap { padding: 0; }
+  .pallet-pair > .pallet-wrap + .pallet-wrap { border-left: 0; border-top: 1px solid var(--border); margin-top: 28px; padding-top: 28px; }
+}
+
+/* Foodservice: "Contact us" link centred under the "Why ... Choose Us" points */
+.prod-points-more { margin: -24px 0 40px; text-align: center; }
+@media (max-width: 760px) { .prod-points-more { margin: -18px 0 30px; } }
