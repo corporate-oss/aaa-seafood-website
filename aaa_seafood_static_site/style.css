@@ -398,17 +398,27 @@ nav.site-nav a.active {
   .hero-stats .stat-label { font-size: 0.6875rem; max-width: 80px; }
 }
 
+/* Buttons: one shape across the site (same height, corners, padding and type).
+   Solid red is the main button; .btn-line is the outlined version on light
+   backgrounds and .btn-outline the white outline on dark or photo backgrounds. */
 .btn {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 46px;
   background: var(--tuna);
   color: #fff;
-  padding: 13px 28px;
+  padding: 12px 28px;
   border-radius: 2px;
   font-family: 'Space Grotesk', sans-serif;
   font-weight: 600;
   font-size: 0.95rem;
+  line-height: 1.25;
   letter-spacing: 0.3px;
-  border: none;
+  text-align: center;
+  text-decoration: none;
+  border: 2px solid var(--tuna);
   cursor: pointer;
   transition: filter 0.2s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
 }
@@ -1135,13 +1145,14 @@ footer.site-footer .fine-print {
 }
 
 /* Outline button for light backgrounds */
-.btn-line {
+.btn-line,
+a.btn-line {
   background: transparent;
-  color: var(--green);
-  border: 2px solid var(--green);
-  padding: 11px 26px;
+  color: var(--tuna);
+  border: 2px solid var(--tuna);
+  text-decoration: none;
 }
-.btn-line:hover { background: var(--green); color: #fff; filter: none; box-shadow: 0 10px 20px rgba(46,74,60,0.22); }
+.btn-line:hover { background: var(--tuna); color: #fff; filter: none; box-shadow: 0 10px 20px rgba(179,64,44,0.22); }
 
 .pallet-note {
   max-width: 640px;
@@ -1304,7 +1315,7 @@ section.catalog { padding-top: 30px; padding-bottom: 44px; }
   .cta-strip .container > div { flex-basis: auto; }
   .cta-strip h2 { font-size: 0.82rem; line-height: 1.15; }
   .cta-strip p { display: none; }
-  .cta-strip .btn-outline { padding: 11px 16px; font-size: 0.8rem; }
+  .cta-strip .btn-outline { padding: 12px 20px; }
 }
 
 
@@ -1533,7 +1544,7 @@ section.stats-combined { padding: 22px 0; }
 .stats-cta { max-width: 250px; }
 .stats-cta strong { display: block; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 1.35rem; line-height: 1.2; }
 .stats-cta p { margin: 4px 0 12px; font-size: 0.85rem; color: #cddccb; line-height: 1.45; }
-.stats-cta .btn { padding: 10px 22px; font-size: 0.9rem; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+
 @media (max-width: 1120px) {
   .stats-cta { flex-basis: 100%; max-width: none; padding: 16px 0 0; border-left: 0; border-top: 1px solid rgba(255,255,255,0.18);
     display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 20px; text-align: left; }
@@ -1577,5 +1588,10 @@ section.stats-combined { padding: 22px 0; }
 
 /* Foodservice: "Contact us" link centred under the "Why ... Choose Us" points */
 .prod-points-more { margin: -18px 0 44px; text-align: center; }
-.prod-points-more .btn { min-height: 44px; }
 @media (max-width: 760px) { .prod-points-more { margin: -12px 0 32px; } }
+
+/* Small phones: same button shape, a little less side padding and slightly
+   smaller text so every button label stays on one line. */
+@media (max-width: 380px) {
+  .btn, .cta-strip .btn-outline { padding-left: 16px; padding-right: 16px; font-size: 0.88rem; }
+}
