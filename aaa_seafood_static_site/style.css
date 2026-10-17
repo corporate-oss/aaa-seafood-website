@@ -1576,5 +1576,6 @@ section.stats-combined { padding: 22px 0; }
 }
 
 /* Foodservice: "Contact us" link centred under the "Why ... Choose Us" points */
-.prod-points-more { margin: -24px 0 40px; text-align: center; }
-@media (max-width: 760px) { .prod-points-more { margin: -18px 0 30px; } }
+.prod-points-more { margin: -18px 0 44px; text-align: center; }
+.prod-points-more .btn { min-height: 44px; }
+@media (max-width: 760px) { .prod-points-more { margin: -12px 0 32px; } }
