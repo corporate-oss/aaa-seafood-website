@@ -31,7 +31,7 @@ h1, h2, h3,
 .brand-text,
 .section-title,
 .category-block h2,
-.contact-card h3,
+.contact-card h2,
 .cta-strip h2 {
   font-family: 'Instrument Serif', Georgia, "Times New Roman", serif;
   font-weight: 400;
@@ -937,8 +937,9 @@ a.product-card:hover .thumb img {
   padding: 18px 22px 8px;
 }
 
-.contact-card h3 {
+.contact-card h2 {
   margin: 0 0 6px;
+  font-size: 1.17em;
   font-style: italic;
   color: var(--tuna);
 }
@@ -1524,7 +1525,7 @@ a.link-more:hover::after { transform: translateX(3px); }
 .contact-icon { display: block; width: 96px; height: 75px; color: var(--green); margin-bottom: 14px; }
 .contact-icon .bubble { fill: var(--bg-alt); }
 .contact-art-eyebrow { font-size: 0.72rem; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--tuna); margin-bottom: 6px; }
-.contact-art h3 { margin: 0 0 8px; font-size: 1.45rem; line-height: 1.2; color: var(--ink); text-wrap: balance; max-width: 320px; }
+.contact-art h2 { margin: 0 0 8px; font-size: 1.45rem; line-height: 1.2; color: var(--ink); text-wrap: balance; max-width: 320px; }
 .contact-art p { margin: 0; color: var(--muted); line-height: 1.6; font-size: 0.95rem; max-width: 320px; }
 @media (max-width: 780px) and (hover: none) and (pointer: coarse) { .contact-art { display: none; } }
 @media (max-width: 640px) { .contact-art { display: none; } }
