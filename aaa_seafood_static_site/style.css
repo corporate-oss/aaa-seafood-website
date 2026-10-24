@@ -651,6 +651,8 @@ header.site-header + section:not(.not-found) .section-sub { margin-bottom: 22px;
    with even space above and below. */
 header.site-header + section.page-intro { padding: 12px 0 24px; }
 .page-intro .section-title { margin-bottom: 6px; }
+/* A title band with no line under the title (Foodservice) */
+.page-intro .section-title:last-child { margin-bottom: 0; }
 header.site-header + section.page-intro .section-sub { margin-bottom: 0; }
 .page-intro .pallet-note { margin-top: 14px; }
 @media (max-width: 700px) and (hover: none) and (pointer: coarse) {
@@ -1096,6 +1098,12 @@ footer.site-footer .fine-print {
   footer.site-footer .footer-facts { flex-direction: column; row-gap: 0; }
   footer.site-footer .footer-facts li { white-space: normal; overflow-wrap: anywhere; }
   footer.site-footer .footer-facts li + li::before { content: none; }
+}
+
+/* Phones: the footer's Contact Us link repeats the red "Contact Us" bar and
+   the menu right above it, so it is left out on small screens. */
+@media (max-width: 760px) {
+  footer.site-footer .footer-cta { display: none; }
 }
 
 /* Wholesale by the pallet (homepage band + products note) */
