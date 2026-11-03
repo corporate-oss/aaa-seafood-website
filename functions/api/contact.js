@@ -18,6 +18,9 @@
 // before. Nothing about the destination changed — only how the hand-off
 // to it happens.
 //
+// Before any of that, submissions are screened for spam (links, spam words,
+// forms filled in too fast) — see "Spam screening" below.
+//
 // After a successful hand-off, it also sends two emails via Resend: a
 // branded confirmation to the visitor (buildConfirmationEmailHtml /
 // sendConfirmationEmail, blind-copied to CONFIRMATION_COPY_TO) and a copy of the inquiry to the sales team
@@ -99,10 +102,14 @@ function escapeHtml(str) {
 
 // Renders the branded "dockside ledger" confirmation email design the user
 // approved as a static mockup, populated with the visitor's own submitted
-// values. Matches the site's design system (dark green header, cream recap
+// values. The free-text message is deliberately NOT repeated here: spammers
+// were typing strangers' email addresses into the form so that our
+// confirmation would deliver their message (and its links) to those people
+// from our domain. Without the message, the confirmation carries nothing
+// worth abusing. (The sales team's copy still includes the full message.) Matches the site's design system (dark green header, cream recap
 // box, red contact strip) and stacks the contact strip to one column under
 // 600px for phone-width inboxes.
-function buildConfirmationEmailHtml({ business, city, phone, language, interest, message }) {
+function buildConfirmationEmailHtml({ business, city, phone, language, interest }) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -229,10 +236,6 @@ function buildConfirmationEmailHtml({ business, city, phone, language, interest,
             <span class="recap-label">Interested In</span>
             <span class="recap-value">${interest ? escapeHtml(interest) : '&mdash;'}</span>
           </div>
-          <div class="recap-row">
-            <span class="recap-label">Message</span>
-            <span class="recap-value">${message ? escapeHtml(message).replace(/\r\n|\r|\n/g, '<br>') : '&mdash;'}</span>
-          </div>
         </div>
       </td></tr>
 
@@ -268,14 +271,14 @@ function buildConfirmationEmailHtml({ business, city, phone, language, interest,
 // context.waitUntil below) rather than propagated, since a confirmation
 // email failing should never make an already-successful form submission
 // look like it failed.
-async function sendConfirmationEmail(env, { business, city, phone, email, language, interest, message }) {
+async function sendConfirmationEmail(env, { business, city, phone, email, language, interest }) {
   const apiKey = env.RESEND_API_KEY;
   if (!apiKey) {
     console.error('RESEND_API_KEY is not configured — skipping confirmation email.');
     return;
   }
 
-  const html = buildConfirmationEmailHtml({ business, city, phone, language, interest, message });
+  const html = buildConfirmationEmailHtml({ business, city, phone, language, interest });
 
   const resp = await fetch(RESEND_API_URL, {
     method: 'POST',
@@ -429,6 +432,44 @@ function isValidEmail(email) {
   return email.length <= 254 && EMAIL_PATTERN.test(email);
 }
 
+// --- Spam screening ----------------------------------------------------------
+//
+// In Nov 2026 a bot started sending escort-ad messages with tinyurl links,
+// each time typing a different stranger's email address so our confirmation
+// email would carry the ad to them. Real customers asking about seafood have
+// no reason to paste web links into the form, so:
+//   - any web link (http://, www., or a bare address like example.com) gets a
+//     visible "please remove the link" message, so a real person can fix it
+//     and resend; email addresses inside the message are fine;
+//   - obvious adult/gambling/pharma spam words are dropped quietly;
+//   - a form filled in faster than a person could type is dropped quietly.
+// "Dropped quietly" means the sender sees the normal success message (so a bot
+// learns nothing) but nothing is saved to the Sheet and no email goes out.
+
+const LINK_PATTERNS = [
+  /https?:\/\//i,
+  /\bwww\./i,
+  // A bare web address such as tinyurl.com/abc or decentgears.com. The
+  // look-behind skips the domain part of an email address (name@gmail.com).
+  /(?<![@\w.-])(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+(?:com|net|org|info|biz|io|co|me|ly|gl|gd|li|link|site|online|shop|store|app|xyz|top|club|live|click|vip|win|bid|work|ru|cn|tk|ml|ga|cf|gq|cc|ws|pw|to|su|us|uk|ca|de|fr|in|jp|kr)(?![\w@-])/i,
+];
+
+const SPAM_WORDS =
+  /\b(?:escorts?|porn\w*|nudes?|onlyfans|hook-?ups?|xxx|casinos?|viagra|cialis|sex)\b/i;
+
+// The page records how long the visitor had the form open (script.js). Seven
+// fields can't honestly be filled in under this.
+const MIN_FILL_MS = 3000;
+
+const LINK_MESSAGE =
+  "Please remove any web links from your message — our form can't accept them. You can describe what you need in words, or call us at 323-582-8003.";
+const RELOAD_MESSAGE =
+  'Please refresh this page and send your message again. If it still won’t go through, call us at 323-582-8003.';
+
+function containsLink(text) {
+  return LINK_PATTERNS.some((re) => re.test(text));
+}
+
 // --- Submission rate limits -------------------------------------------------
 //
 // Stops a script (or someone hammering the button) from flooding the Sheet.
@@ -526,6 +567,29 @@ export async function onRequestPost(context) {
     return json({ ok: true }, 200);
   }
 
+  // Spam screening (see LINK_PATTERNS / SPAM_WORDS above).
+  const typed = [name, business, city, phone, message, interestRaw].join('\n');
+  if (SPAM_WORDS.test(typed)) {
+    console.log('Dropped contact form spam (spam words).');
+    return json({ ok: true }, 200);
+  }
+  if (containsLink(typed)) {
+    console.log('Turned away contact form submission containing a link.');
+    return json({ ok: false, error: LINK_MESSAGE }, 400);
+  }
+  const elapsedRaw = form.get('form_elapsed');
+  if (elapsedRaw === null) {
+    // Sent without our page's script: a bot posting directly, or a page
+    // that was open from before this check existed.
+    console.log('Turned away contact form submission without form_elapsed.');
+    return json({ ok: false, error: RELOAD_MESSAGE }, 400);
+  }
+  const elapsed = Number(elapsedRaw);
+  if (!Number.isFinite(elapsed) || elapsed < MIN_FILL_MS) {
+    console.log(`Dropped contact form spam (filled in ${elapsedRaw} ms).`);
+    return json({ ok: true }, 200);
+  }
+
   // Server-wide ceiling on what actually gets written to the Sheet, as a
   // backstop against a flood spread across many addresses.
   if (!allowRecorded(now)) {
@@ -618,7 +682,7 @@ export async function onRequestPost(context) {
   // safely recorded in the Sheet at this point regardless of what happens
   // to the email.
   context.waitUntil(
-    sendConfirmationEmail(context.env, { business, city, phone, email, language, interest, message }).catch((err) => {
+    sendConfirmationEmail(context.env, { business, city, phone, email, language, interest }).catch((err) => {
       console.error('Failed to send confirmation email:', err);
     })
   );
