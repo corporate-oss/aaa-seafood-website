@@ -185,6 +185,9 @@ document.addEventListener('DOMContentLoaded', function () {
   if (!form || !note) return;
 
   var submitBtn = form.querySelector('button[type="submit"]');
+  // When the form appeared. The server turns away forms "filled in" faster
+  // than a person could type, which is a sure sign of a spam bot.
+  var openedAt = Date.now();
 
   form.addEventListener('submit', function (event) {
     event.preventDefault();
@@ -193,9 +196,12 @@ document.addEventListener('DOMContentLoaded', function () {
     note.classList.remove('success', 'error');
     if (submitBtn) submitBtn.disabled = true;
 
+    var data = new FormData(form);
+    data.append('form_elapsed', String(Date.now() - openedAt));
+
     fetch(form.action, {
       method: 'POST',
-      body: new FormData(form),
+      body: data,
     })
       .then(function (response) {
         return response.json().catch(function () { return { ok: false }; }).then(function (data) {
