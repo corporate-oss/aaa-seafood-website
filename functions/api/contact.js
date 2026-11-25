@@ -19,7 +19,9 @@
 // to it happens.
 //
 // Before any of that, submissions are screened for spam (links, spam words,
-// forms filled in too fast) — see "Spam screening" below.
+// forms filled in too fast) — see "Spam screening" below — and the email
+// address is checked (typos, throwaway services, domains that can't receive
+// mail) — see "Email address checks".
 //
 // After a successful hand-off, it also sends two emails via Resend: a
 // branded confirmation to the visitor (buildConfirmationEmailHtml /
@@ -28,6 +30,8 @@
 // via context.waitUntil so a slow or failed email never turns an otherwise
 // successful submission into an error for the visitor — their message is
 // already safely recorded in the Sheet by that point regardless.
+
+import DISPOSABLE_LIST from './_disposable-domains.js';
 
 const FORM_VIEW_URL =
   'https://docs.google.com/forms/d/e/1FAIpQLSdGEXpdngnj7pHR-G4XFNNNykZAT51z7D9NHcWAVgKb9fn9jQ/viewform';
@@ -211,8 +215,8 @@ function buildConfirmationEmailHtml({ business, city, phone, language, interest,
         <h1 class="title">We've received your message.</h1>
         <p class="lead">
           Thanks for reaching out to AAA International Seafood. This confirms we received your
-          submission below — a member of our team will follow up shortly, usually within one
-          business day.
+          submission below — a member of our team will follow up shortly, usually within 48
+          business hours.
         </p>
 
         <div class="recap">
@@ -437,6 +441,93 @@ function isValidEmail(email) {
   return email.length <= 254 && EMAIL_PATTERN.test(email);
 }
 
+// --- Email address checks ----------------------------------------------------
+//
+// Beyond the format check above, every inquiry's email address is checked so
+// the team always gets an address they can actually reply to:
+//   1. common misspellings of big email providers (gmial.com, yaho.com …) —
+//      the visitor is asked "Did you mean …?";
+//   2. throwaway ("disposable") email services, such as the ones the Nov 2026
+//      spam bot used — turned away with a request for a real address;
+//   3. whether the part after the @ can receive email at all (a DNS lookup
+//      for its mail servers) — made-up domains are turned away.
+// All three show the visitor a plain message they can fix. If the DNS lookup
+// itself fails or is slow, the inquiry goes through (we never lose a real
+// customer to a hiccup). None of this can prove the address belongs to the
+// person typing it; the spam screening below handles abuse of that kind.
+
+const DISPOSABLE_DOMAINS = new Set(DISPOSABLE_LIST.split('\n'));
+
+function isDisposableDomain(domain) {
+  // Also catches subdomains, e.g. anything.mailinator.com.
+  const parts = domain.split('.');
+  for (let i = 0; i < parts.length - 1; i++) {
+    if (DISPOSABLE_DOMAINS.has(parts.slice(i).join('.'))) return true;
+  }
+  return false;
+}
+
+const DOMAIN_TYPOS = {
+  'gmial.com': 'gmail.com', 'gmai.com': 'gmail.com', 'gmal.com': 'gmail.com', 'gamil.com': 'gmail.com',
+  'gnail.com': 'gmail.com', 'gmaill.com': 'gmail.com', 'gmail.co': 'gmail.com', 'gmail.con': 'gmail.com',
+  'gmail.cm': 'gmail.com', 'gmail.om': 'gmail.com', 'gmail.comm': 'gmail.com', 'gmailcom': 'gmail.com',
+  'yaho.com': 'yahoo.com', 'yahooo.com': 'yahoo.com', 'yhoo.com': 'yahoo.com', 'yahoo.co': 'yahoo.com',
+  'yahoo.con': 'yahoo.com', 'yahoo.cm': 'yahoo.com',
+  'hotmial.com': 'hotmail.com', 'hotmai.com': 'hotmail.com', 'hotmal.com': 'hotmail.com', 'hotmail.co': 'hotmail.com',
+  'hotmail.con': 'hotmail.com', 'homail.com': 'hotmail.com',
+  'outlok.com': 'outlook.com', 'outloo.com': 'outlook.com', 'outlook.co': 'outlook.com', 'outlook.con': 'outlook.com',
+  'iclod.com': 'icloud.com', 'icoud.com': 'icloud.com', 'iclound.com': 'icloud.com', 'icloud.co': 'icloud.com',
+  'icloud.con': 'icloud.com',
+  'aol.co': 'aol.com', 'aol.con': 'aol.com',
+  'comcast.com': 'comcast.net', 'sbcglobal.com': 'sbcglobal.net', 'att.com': 'att.net',
+  'naver.co': 'naver.com', 'nave.com': 'naver.com',
+};
+
+const EMAIL_TYPO_MESSAGE = (suggestion) =>
+  `Please check your email address — did you mean ${suggestion}? We need it to reply to you.`;
+const EMAIL_DISPOSABLE_MESSAGE =
+  'Please use your regular business or personal email. Temporary or throwaway addresses can’t be used, because we need to be able to reply to you.';
+const EMAIL_NO_MAIL_MESSAGE =
+  'We couldn’t find that email address — the part after the @ doesn’t seem to receive email. Please check it for typos.';
+
+// Asks Cloudflare's public DNS whether `domain` has mail servers.
+// Returns 'ok', 'no-mail', or 'unknown' (lookup failed — let it through).
+async function mailDomainStatus(domain) {
+  const lookup = async (type) => {
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), 2500);
+    try {
+      const resp = await fetch(
+        `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=${type}`,
+        { headers: { accept: 'application/dns-json' }, signal: ctl.signal }
+      );
+      if (!resp.ok) return null;
+      return await resp.json();
+    } catch (err) {
+      return null;
+    } finally {
+      clearTimeout(timer);
+    }
+  };
+
+  const mx = await lookup('MX');
+  if (!mx) return 'unknown';
+  if (mx.Status === 3) return 'no-mail'; // the domain doesn't exist
+  if (mx.Status !== 0) return 'unknown';
+  const mxRecords = (mx.Answer || []).filter((a) => a.type === 15);
+  if (mxRecords.length) {
+    // A "null MX" (0 .) means the domain says it accepts no email.
+    return mxRecords.some((a) => !/^\s*0\s+\.\s*$/.test(String(a.data))) ? 'ok' : 'no-mail';
+  }
+  // No mail servers listed: email falls back to the domain's own address.
+  for (const [type, code] of [['A', 1], ['AAAA', 28]]) {
+    const r = await lookup(type);
+    if (!r) return 'unknown';
+    if (r.Status === 0 && (r.Answer || []).some((a) => a.type === code)) return 'ok';
+  }
+  return 'no-mail';
+}
+
 // --- Spam screening ----------------------------------------------------------
 //
 // In Nov 2026 a bot started sending escort-ad messages with tinyurl links,
@@ -555,6 +646,18 @@ export async function onRequestPost(context) {
     return json({ ok: false, error: 'Please check your email address — it should look like name@example.com — so we can send your confirmation.' }, 400);
   }
 
+  // Email address checks that need no lookup (see "Email address checks").
+  const emailAt = email.lastIndexOf('@');
+  const emailLocal = email.slice(0, emailAt);
+  const emailDomain = email.slice(emailAt + 1).toLowerCase();
+  if (DOMAIN_TYPOS[emailDomain]) {
+    return json({ ok: false, error: EMAIL_TYPO_MESSAGE(`${emailLocal}@${DOMAIN_TYPOS[emailDomain]}`) }, 400);
+  }
+  if (isDisposableDomain(emailDomain)) {
+    console.log('Turned away contact form submission from a throwaway email service.');
+    return json({ ok: false, error: EMAIL_DISPOSABLE_MESSAGE }, 400);
+  }
+
   // Rate limits. Every complete submission counts against the sender's
   // address (including ones caught by the honeypot below, so a bot gets
   // cut off either way); invalid ones above don't, so a visitor fixing a
@@ -593,6 +696,13 @@ export async function onRequestPost(context) {
   if (!Number.isFinite(elapsed) || elapsed < MIN_FILL_MS) {
     console.log(`Dropped contact form spam (filled in ${elapsedRaw} ms).`);
     return json({ ok: true }, 200);
+  }
+
+  // Can the email address's domain receive email at all? (Done after the
+  // spam screening so bots never cost us a lookup.)
+  if ((await mailDomainStatus(emailDomain)) === 'no-mail') {
+    console.log('Turned away contact form submission: email domain receives no mail.');
+    return json({ ok: false, error: EMAIL_NO_MAIL_MESSAGE }, 400);
   }
 
   // Server-wide ceiling on what actually gets written to the Sheet, as a
