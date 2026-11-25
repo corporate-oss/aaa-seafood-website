@@ -446,7 +446,8 @@ function isValidEmail(email) {
 // Beyond the format check above, every inquiry's email address is checked so
 // the team always gets an address they can actually reply to:
 //   1. common misspellings of big email providers (gmial.com, yaho.com …) —
-//      the visitor is asked "Did you mean …?";
+//      the visitor is told the email isn't valid and the message wasn't sent
+//      (Brian preferred this to suggesting a corrected address);
 //   2. throwaway ("disposable") email services, such as the ones the Nov 2026
 //      spam bot used — turned away with a request for a real address;
 //   3. whether the part after the @ can receive email at all (a DNS lookup
@@ -483,8 +484,8 @@ const DOMAIN_TYPOS = {
   'naver.co': 'naver.com', 'nave.com': 'naver.com',
 };
 
-const EMAIL_TYPO_MESSAGE = (suggestion) =>
-  `Please check your email address — did you mean ${suggestion}? We need it to reply to you.`;
+const EMAIL_TYPO_MESSAGE =
+  'The email you entered is not valid, so your message was not sent. Please check it and try again.';
 const EMAIL_DISPOSABLE_MESSAGE =
   'Please use your regular business or personal email. Temporary or throwaway addresses can’t be used, because we need to be able to reply to you.';
 const EMAIL_NO_MAIL_MESSAGE =
@@ -647,11 +648,9 @@ export async function onRequestPost(context) {
   }
 
   // Email address checks that need no lookup (see "Email address checks").
-  const emailAt = email.lastIndexOf('@');
-  const emailLocal = email.slice(0, emailAt);
-  const emailDomain = email.slice(emailAt + 1).toLowerCase();
+  const emailDomain = email.slice(email.lastIndexOf('@') + 1).toLowerCase();
   if (DOMAIN_TYPOS[emailDomain]) {
-    return json({ ok: false, error: EMAIL_TYPO_MESSAGE(`${emailLocal}@${DOMAIN_TYPOS[emailDomain]}`) }, 400);
+    return json({ ok: false, error: EMAIL_TYPO_MESSAGE }, 400);
   }
   if (isDisposableDomain(emailDomain)) {
     console.log('Turned away contact form submission from a throwaway email service.');
