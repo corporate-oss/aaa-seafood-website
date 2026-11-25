@@ -8,7 +8,7 @@
 - Website: https://www.aaainternationalseafood.com/
 - Customers: restaurants, sushi bars, fine-dining kitchens, hotels, caterers and foodservice operators
 - Pricing: quoted per order by product and quantity, because seafood prices follow the market
-- New customers: send a message through the contact page; the sales team replies within 24 business hours
+- New customers: send a message through the contact page; the sales team replies within 48 business hours
 - Volume: pallet orders are available
 
 ## Products

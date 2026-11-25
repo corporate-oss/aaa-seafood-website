@@ -210,7 +210,7 @@ document.addEventListener('DOMContentLoaded', function () {
       })
       .then(function (result) {
         if (result.data && result.data.ok) {
-          note.textContent = "Thanks — your message is on its way. We'll reach out within 24 business hours.";
+          note.textContent = "Thanks — your message is on its way. We'll reach out within 48 business hours.";
           note.classList.add('success');
           form.reset();
         } else {
