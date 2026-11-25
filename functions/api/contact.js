@@ -102,14 +102,15 @@ function escapeHtml(str) {
 
 // Renders the branded "dockside ledger" confirmation email design the user
 // approved as a static mockup, populated with the visitor's own submitted
-// values. The free-text message is deliberately NOT repeated here: spammers
-// were typing strangers' email addresses into the form so that our
-// confirmation would deliver their message (and its links) to those people
-// from our domain. Without the message, the confirmation carries nothing
-// worth abusing. (The sales team's copy still includes the full message.) Matches the site's design system (dark green header, cream recap
-// box, red contact strip) and stacks the contact strip to one column under
-// 600px for phone-width inboxes.
-function buildConfirmationEmailHtml({ business, city, phone, language, interest }) {
+// values, including the visitor's full message. (In Nov 2026 the message was
+// briefly left out because spammers were typing strangers' email addresses
+// into the form so our confirmation would carry their ad and links to those
+// people. Brian asked for it back; the spam screening in onRequestPost now
+// refuses links and drops spam before any email is sent, so the message
+// can't carry a link.) Matches the site's design system (dark green header,
+// cream recap box, red contact strip) and stacks the contact strip to one
+// column under 600px for phone-width inboxes.
+function buildConfirmationEmailHtml({ business, city, phone, language, interest, message }) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -236,6 +237,10 @@ function buildConfirmationEmailHtml({ business, city, phone, language, interest 
             <span class="recap-label">Interested In</span>
             <span class="recap-value">${interest ? escapeHtml(interest) : '&mdash;'}</span>
           </div>
+          <div class="recap-row">
+            <span class="recap-label">Message</span>
+            <span class="recap-value">${message ? escapeHtml(message).replace(/\r\n|\r|\n/g, '<br>') : '&mdash;'}</span>
+          </div>
         </div>
       </td></tr>
 
@@ -271,14 +276,14 @@ function buildConfirmationEmailHtml({ business, city, phone, language, interest 
 // context.waitUntil below) rather than propagated, since a confirmation
 // email failing should never make an already-successful form submission
 // look like it failed.
-async function sendConfirmationEmail(env, { business, city, phone, email, language, interest }) {
+async function sendConfirmationEmail(env, { business, city, phone, email, language, interest, message }) {
   const apiKey = env.RESEND_API_KEY;
   if (!apiKey) {
     console.error('RESEND_API_KEY is not configured — skipping confirmation email.');
     return;
   }
 
-  const html = buildConfirmationEmailHtml({ business, city, phone, language, interest });
+  const html = buildConfirmationEmailHtml({ business, city, phone, language, interest, message });
 
   const resp = await fetch(RESEND_API_URL, {
     method: 'POST',
@@ -682,7 +687,7 @@ export async function onRequestPost(context) {
   // safely recorded in the Sheet at this point regardless of what happens
   // to the email.
   context.waitUntil(
-    sendConfirmationEmail(context.env, { business, city, phone, email, language, interest }).catch((err) => {
+    sendConfirmationEmail(context.env, { business, city, phone, email, language, interest, message }).catch((err) => {
       console.error('Failed to send confirmation email:', err);
     })
   );
